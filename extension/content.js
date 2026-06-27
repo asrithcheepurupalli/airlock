@@ -133,7 +133,11 @@
     const marker = (text.match(/\[[A-Z][A-Z_]*_\d+\]/) || [])[0]
     try {
       el.focus()
+      // selectAll + delete empties the box first, THEN insertText. Replacing a
+      // selection directly with insertText appends on ChatGPT/Gemini (only Claude
+      // replaces); deleting first gives a clean replace on all three (verified).
       document.execCommand('selectAll', false, null)
+      document.execCommand('delete', false, null)
       document.execCommand('insertText', false, text)
       if (marker && boxText(el).includes(marker)) return 'inplace'
     } catch (_e) {
