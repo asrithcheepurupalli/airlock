@@ -11,6 +11,34 @@ function Wordmark({ name }) {
   )
 }
 
+// Thin line icons, drawn inline so the page ships no icon library. All use
+// currentColor + round caps so they inherit the ink/red system.
+const ICONS = {
+  shield: 'M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3zM8.5 12l2.5 2.5L15.5 10',
+  loop: 'M4 9a8 8 0 0 1 13.5-3.5L20 8M20 5v3h-3M20 15a8 8 0 0 1-13.5 3.5L4 16M4 19v-3h3',
+  sliders: 'M4 7h9M17 7h3M4 12h3M11 12h9M4 17h12M20 17h0',
+  therapist: 'M21 11.5A8.4 8.4 0 0 1 12.5 20a9 9 0 0 1-3.9-.9L3 21l1.9-5.6A8.4 8.4 0 1 1 21 11.5zM8.5 11.2a2 2 0 0 1 3.5-1 2 2 0 0 1 3.5 1c0 1.6-3.5 3.6-3.5 3.6s-3.5-2-3.5-3.6z',
+  scales: 'M12 3v18M7.5 21h9M5 7h14M12 4l-7 3M12 4l7 3M5 7l-2.5 6a3 3 0 0 0 5 0L5 7zM19 7l-2.5 6a3 3 0 0 0 5 0L19 7z',
+  code: 'M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 6l-3 12',
+  chart: 'M4 5v14h16M7.5 14l3-3 2.5 2 4.5-5',
+  people: 'M9 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3.5 20a5.5 5.5 0 0 1 11 0M16 7.5a3 3 0 0 1 0 5M17.5 20a5.5 5.5 0 0 0-2.5-4.6',
+  briefcase: 'M5 8h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M4 13h16',
+}
+function Icon({ name }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {ICONS[name].split('M').filter(Boolean).map((d, i) => <path key={i} d={'M' + d} />)}
+    </svg>
+  )
+}
+
+const PILLARS = [
+  ['shield', 'Provably local', 'The browser extension requests no network permission and makes no requests of its own. You can open the network tab and watch it stay silent. In a category where the famous names turned out to be data brokers, that proof is the product.'],
+  ['loop', 'Reversible by design', 'Most tools strip your data and leave you decoding placeholders. Airlock restores them, so the round trip is invisible to you and airtight to the model.'],
+  ['sliders', 'Built for your work', 'Term packs for the things a generic filter cannot know: a patient roster, privileged matter names, a project codename. Tuned per practice, by our studio.'],
+]
+
 const LEAK = [
   ['Marcus Hill', 'a named patient, identifiable health info'],
   ['marcus.hill@gmail.com', 'direct contact identifier'],
@@ -38,12 +66,12 @@ const STAKES = [
 ]
 
 const AUDIENCE = [
-  ['Therapists and clinicians', 'Draft notes and letters without putting a client where a consumer chatbot can keep them.'],
-  ['Lawyers and small firms', 'Confidentiality is the job. Airlock is the thin layer that lets AI help without the privileged details going with it.'],
-  ['Founders and developers', 'Paste the client brief, the API key, the proprietary code. Airlock makes sure there is nothing in it to leak.'],
-  ['Finance and accounting', 'Account numbers, balances, client names. Get the analysis without handing over the ledger.'],
-  ['HR and recruiting', 'Salaries, reviews, candidate details. Use AI on the words without exposing the people.'],
-  ['Consultants and agencies', 'Every client is someone else\'s secret. Keep their names and numbers off a third party\'s servers.'],
+  ['therapist', 'Therapists and clinicians', 'Draft notes and letters without putting a client where a consumer chatbot can keep them.'],
+  ['scales', 'Lawyers and small firms', 'Confidentiality is the job. Airlock is the thin layer that lets AI help without the privileged details going with it.'],
+  ['code', 'Founders and developers', 'Paste the client brief, the API key, the proprietary code. Airlock makes sure there is nothing in it to leak.'],
+  ['chart', 'Finance and accounting', 'Account numbers, balances, client names. Get the analysis without handing over the ledger.'],
+  ['people', 'HR and recruiting', 'Salaries, reviews, candidate details. Use AI on the words without exposing the people.'],
+  ['briefcase', 'Consultants and agencies', 'Every client is someone else\'s secret. Keep their names and numbers off a third party\'s servers.'],
 ]
 
 export default function App() {
@@ -88,7 +116,7 @@ export default function App() {
         <h1>The AI you use should never<br />see your client's name.</h1>
         <p className="lede">Airlock is a privacy firewall for AI. It strips names, emails,
           secrets and client data out of your prompt on your own device, before a single
-          word reaches ChatGPT or Claude. Then it puts your real values back into the
+          word reaches ChatGPT, Claude or Gemini. Then it puts your real values back into the
           answer. The model only ever sees placeholders.</p>
 
         <div className="hero-cta">
@@ -152,24 +180,13 @@ export default function App() {
         <div className="band-inner">
           <h2>Why this holds</h2>
           <div className="pillars">
-            <div className="pillar">
-              <h3>Provably local</h3>
-              <p>The browser extension requests no network permission and makes no requests
-                of its own. You can open the network tab and watch it stay silent. In a
-                category where the famous names turned out to be data brokers, that proof is
-                the product.</p>
-            </div>
-            <div className="pillar">
-              <h3>Reversible by design</h3>
-              <p>Most tools strip your data and leave you decoding placeholders. Airlock
-                restores them, so the round trip is invisible to you and airtight to the
-                model.</p>
-            </div>
-            <div className="pillar">
-              <h3>Built for your work</h3>
-              <p>Term packs for the things a generic filter cannot know: a patient roster,
-                privileged matter names, a project codename. Tuned per practice, by our studio.</p>
-            </div>
+            {PILLARS.map(([icon, t, d]) => (
+              <div className="pillar" key={t}>
+                <span className="pillar-ic"><Icon name={icon} /></span>
+                <h3>{t}</h3>
+                <p>{d}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -180,8 +197,12 @@ export default function App() {
           whose work touches other people's secrets, and who has started to lean on AI to move
           faster, needs a layer between the two.</p>
         <div className="audience">
-          {AUDIENCE.map(([t, d]) => (
-            <div className="aud" key={t}><h3>{t}</h3><p>{d}</p></div>
+          {AUDIENCE.map(([icon, t, d]) => (
+            <div className="aud" key={t}>
+              <span className="aud-ic"><Icon name={icon} /></span>
+              <h3>{t}</h3>
+              <p>{d}</p>
+            </div>
           ))}
         </div>
         <p className="who-foot">And honestly, anyone who has ever pasted something into ChatGPT

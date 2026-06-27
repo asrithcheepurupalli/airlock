@@ -279,12 +279,17 @@ button.link { background: none; color: var(--muted); padding: 0; font-size: 12px
 .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 24px; }
 .pillar h3 { font-size: 19px; margin: 0 0 8px; }
 .pillar p { font-size: 14.5px; color: #3a3a34; margin: 0; }
+.pillar-ic { display: inline-flex; color: var(--red); margin-bottom: 13px; }
+.pillar-ic svg { width: 28px; height: 28px; }
 
 /* ---- audience ---- */
 .audience { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
 .aud { border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: var(--card); }
 .aud h3 { font-size: 18px; margin: 0 0 8px; }
 .aud p { font-size: 14px; color: #3a3a34; margin: 0; }
+.aud-ic { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px;
+  border-radius: 11px; background: var(--bg); border: 1px solid var(--line); color: var(--ink); margin-bottom: 14px; }
+.aud-ic svg { width: 22px; height: 22px; }
 
 /* ---- pricing ---- */
 .pricing { max-width: 1000px; margin: 84px auto 0; padding: 0 24px; text-align: center; }
