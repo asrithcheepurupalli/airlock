@@ -113,17 +113,31 @@
     return ok
   }
 
-  // Put the redacted draft into the compose box.
+  // Put the redacted draft into the compose box. Returns 'inplace' (done) or
+  // 'paste' (user must press ⌘V) so the pill can tell the user what to do.
   //  - plain textarea: write it directly (sticks, React-safe).
-  //  - rich editor (ChatGPT/Claude): forcing text in gets reverted by the
-  //    framework, so we copy it and pre-select the draft. One ⌘V overwrites it.
-  // Returns 'inplace' or 'paste' so the pill can tell the user what to do.
+  //  - rich editor (tiptap/ProseMirror on ChatGPT+Claude, Quill on Gemini):
+  //    selectAll + execCommand insertText goes through the editor's own input
+  //    pipeline, so all three keep it. Verified on Claude and Gemini's real boxes.
+  //  - if that ever fails to land, fall back to clipboard + pre-select so one ⌘V
+  //    overwrites (the path ChatGPT shipped on).
   function applyRedaction(el, text) {
     if (el.tagName === 'TEXTAREA') {
       const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set
       setter.call(el, text)
       el.dispatchEvent(new Event('input', { bubbles: true }))
       return 'inplace'
+    }
+    // a redaction always introduces at least one placeholder like [EMAIL_1];
+    // its presence in the box afterward proves the replace actually landed.
+    const marker = (text.match(/\[[A-Z][A-Z_]*_\d+\]/) || [])[0]
+    try {
+      el.focus()
+      document.execCommand('selectAll', false, null)
+      document.execCommand('insertText', false, text)
+      if (marker && boxText(el).includes(marker)) return 'inplace'
+    } catch (_e) {
+      /* fall through to the clipboard path */
     }
     copyText(text)
     el.focus()
