@@ -12,6 +12,7 @@
 //   LICENSE_PRIVATE_KEY  base64 pkcs8 Ed25519 private key (from .license-private-key)
 //   GUMROAD_PRODUCT_ID   the product id of the Airlock Pro product on Gumroad
 import { mintLicense } from '../lib/license.mjs'
+import { claimSeat, seatConfigured } from '../lib/seat.mjs'
 
 const ALLOWED = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,https://airlock.made-by-ac.com')
   .split(',').map((s) => s.trim()).filter(Boolean)
@@ -39,6 +40,7 @@ export default async function handler(req, res) {
 
   const body = typeof req.body === 'string' ? safeJson(req.body) : req.body || {}
   const licenseKey = String(body.licenseKey || '').trim()
+  const deviceId = String(body.deviceId || '').trim().slice(0, 64)
   if (!licenseKey || licenseKey.length > 100) {
     return res.status(400).json({ error: 'Enter the license key from your Gumroad receipt.' })
   }
@@ -74,14 +76,34 @@ export default async function handler(req, res) {
     return res.status(402).json({ error: 'This subscription is no longer active.' })
   }
 
-  // The payload must be DETERMINISTIC so the same Gumroad key always mints the
+  const saleId = p.sale_id || p.id || licenseKey
+
+  // Floating seat: one device per sale. If a device is given and the store is
+  // configured, claim the seat; refuse if another device already holds it. The
+  // device id also goes into the token, binding it to this device.
+  if (deviceId && seatConfigured()) {
+    let held
+    try {
+      held = await claimSeat(saleId, deviceId)
+    } catch (_e) {
+      return res.status(502).json({ error: 'Could not reach the license store. Try again in a moment.' })
+    }
+    if (!held) {
+      return res.status(409).json({
+        error: 'This license is already active on another device. Release it there (Remove in the popup) and try again.',
+      })
+    }
+  }
+
+  // The payload must be DETERMINISTIC so the same key + device always mints the
   // exact same token (Ed25519 signs deterministically). So derive the issued time
   // from the purchase itself — never Date.now(), which would change every call.
   const token = mintLicense(
     {
       e: p.email || '',
       p: 'airlock-pro',
-      s: p.sale_id || p.id || licenseKey,
+      s: saleId,
+      ...(deviceId ? { d: deviceId } : {}),
       i: purchaseSeconds(p),
     },
     privKey

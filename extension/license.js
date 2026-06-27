@@ -63,13 +63,37 @@
     })
   }
 
+  // A stable per-install id, created once and kept in local storage. Floating-seat
+  // tokens are bound to it: a token only grants Pro on the device that activated.
+  const DEVICE_KEY = 'airlock_device_id'
+  function deviceId() {
+    return new Promise((resolve) => {
+      try {
+        chrome.storage.local.get([DEVICE_KEY], (r) => {
+          const existing = r && r[DEVICE_KEY]
+          if (existing) return resolve(existing)
+          const id = crypto.randomUUID ? crypto.randomUUID() : 'd-' + Date.now() + '-' + (performance.now() | 0)
+          chrome.storage.local.set({ [DEVICE_KEY]: id }, () => resolve(id))
+        })
+      } catch (_e) {
+        resolve('')
+      }
+    })
+  }
+
   // The live Pro state: { pro, email }. Re-verifies the stored token every call so
   // a tampered storage value can never grant Pro.
   async function state() {
     const token = await getStored()
     if (!token) return { pro: false, email: '' }
     const payload = await verify(token)
-    return payload ? { pro: true, email: payload.e || '' } : { pro: false, email: '' }
+    if (!payload) return { pro: false, email: '' }
+    // Device-bound tokens only grant Pro on the device that activated them.
+    if (payload.d) {
+      const myId = await deviceId()
+      if (payload.d !== myId) return { pro: false, email: '', wrongDevice: true }
+    }
+    return { pro: true, email: payload.e || '' }
   }
 
   // Verify a pasted token and, if valid, persist it. Returns the payload or null.
@@ -96,5 +120,5 @@
     })
   }
 
-  window.AirlockLicense = { verify, state, activate, deactivate }
+  window.AirlockLicense = { verify, state, activate, deactivate, deviceId, getToken: getStored }
 })()

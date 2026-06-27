@@ -195,11 +195,13 @@
   actBtn.addEventListener('click', doActivate)
   licKey.addEventListener('keydown', (e) => { if (e.key === 'Enter') doActivate() })
 
-  deact.addEventListener('click', async () => {
-    if (License) await License.deactivate()
-    actMsg.textContent = ''
-    reflectPro({ pro: false })
-    run()
+  // Remove opens the website's release flow, which frees this device's seat so the
+  // license can move elsewhere, then clears the local token. The extension itself
+  // never calls the license server; the page does.
+  deact.addEventListener('click', () => {
+    const url = 'https://airlock.made-by-ac.com/activate.html?release=1'
+    if (chrome.tabs?.create) chrome.tabs.create({ url })
+    else window.open(url, '_blank')
   })
 
   function openActivatePage() {
