@@ -11,7 +11,8 @@
     "build": "vite build",
     "build:ext": "vite build --config vite.ext.config.js && node scripts/build-extension.mjs",
     "preview": "vite preview",
-    "package:ext": "bash scripts/package-extension.sh"
+    "package:ext": "bash scripts/package-extension.sh",
+    "test": "node test/detection.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.40.0",

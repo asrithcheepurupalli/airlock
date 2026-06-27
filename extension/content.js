@@ -164,10 +164,12 @@
       nerTimer = setTimeout(() => requestNer(text), 350)
     }
     const base = redact(text, termList)
-    // Pro locks suspected names/orgs too: the model's spans once it ships, else the
-    // heuristic sniffer. Free leaves them surfaced as "exposed" below.
+    // Pro locks suspected names/orgs too. Once the model is warm we lock the UNION
+    // of its spans and the heuristic sniffer (the cased model misses lowercase
+    // names; the sniffer backfills them). Model spans go first so they win any
+    // overlap. Free leaves all of this surfaced as "exposed" below instead.
     const lockNames = proActive
-      ? (USE_MODEL && nerReady ? nerSpans : sniffProspects(text, base.spans))
+      ? (USE_MODEL && nerReady ? nerSpans.concat(sniffProspects(text, base.spans)) : sniffProspects(text, base.spans))
       : []
     const { spans } = proActive ? redact(text, termList, lockNames) : base
     // PRO + model: while it warms, never claim "clean" for names we haven't checked
@@ -209,7 +211,7 @@
     const text = boxText(box)
     const cbase = redact(text, termList)
     const cLockNames = proActive
-      ? (USE_MODEL && nerReady ? nerSpans : sniffProspects(text, cbase.spans))
+      ? (USE_MODEL && nerReady ? nerSpans.concat(sniffProspects(text, cbase.spans)) : sniffProspects(text, cbase.spans))
       : []
     const { redacted, map, spans } = proActive ? redact(text, termList, cLockNames) : cbase
     if (!spans.length) {

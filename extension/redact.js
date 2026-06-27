@@ -12,14 +12,44 @@
     {
       type: 'SECRET',
       label: 'API key / token',
-      re: /\b(sk[-_][a-zA-Z0-9_-]{16,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z\-_]{20,}|xox[baprs]-[0-9A-Za-z-]{10,})\b/g,
+      // Common provider prefixes. Newer ones (github_pat_, hf_, sk-proj via sk-)
+      // included. Distinctive prefixes keep false positives near zero.
+      re: /\b(sk[-_][a-zA-Z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{22,}|AIza[0-9A-Za-z\-_]{20,}|xox[baprs]-[0-9A-Za-z-]{10,}|hf_[A-Za-z0-9]{30,})\b/g,
     },
+    // JSON Web Token: header.payload.signature, each base64url.
+    { type: 'SECRET', label: 'JWT', re: /\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{6,}/g },
     { type: 'EMAIL', label: 'Email', re: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g },
-    { type: 'SSN', label: 'SSN', re: /\b\d{3}-\d{2}-\d{4}\b/g },
+    // SSN with dashes OR spaces (the 3-2-4 grouping is distinctive).
+    { type: 'SSN', label: 'SSN', re: /\b\d{3}[-\s]\d{2}[-\s]\d{4}\b/g },
+    // SSN as a bare 9-digit run, ONLY right after an SSN/social keyword (else a
+    // plain 9-digit number is far too ambiguous to lock). Locks the digits only.
+    { type: 'SSN', label: 'SSN', re: /\b(?:ssn|social(?:\s+security)?(?:\s+(?:no|number|#))?)\b[:#\s]*(\d{9})\b/gi, group: 1 },
     { type: 'CARD', label: 'Card number', re: /\b\d(?:[ -]?\d){12,15}\b/g, validate: luhn },
-    { type: 'PHONE', label: 'Phone', re: /(\+?\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/g },
+    // Phones: international (+CC then 7-14 digits) and US 10-digit. A digit-count
+    // check rejects stray number runs.
+    {
+      type: 'PHONE',
+      label: 'Phone',
+      re: /(?:\+\d{1,3}[\s.-]?\d(?:[\s.-]?\d){6,13}|(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})(?:\s?(?:x|ext\.?)\s?\d{1,5})?/g,
+      validate: phoneValid,
+    },
+    // 7-digit local number, ONLY after a phone keyword (a bare NNN-NNNN is too
+    // easily a range like 100-2000 to lock on its own). Locks the digits only.
+    {
+      type: 'PHONE',
+      label: 'Phone',
+      re: /\b(?:call|phone|telephone|tel|mobile|cell|fax|contact|dial)\b[:.\s#]*(\d{3}[-.]\d{4})/gi,
+      group: 1,
+    },
     { type: 'IP', label: 'IP address', re: /\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b/g },
   ]
+
+  function phoneValid(v) {
+    const d = v.replace(/\D/g, '')
+    if (d.length < 7 || d.length > 15) return false
+    if (/^(\d)\1+$/.test(d)) return false // all-same-digit isn't a phone
+    return true
+  }
 
   function luhn(value) {
     const d = value.replace(/[^\d]/g, '')
@@ -77,9 +107,26 @@
     'Technology|Health|Healthcare|Hospital|Clinic|Medical|Bank|Capital|Ventures|Labs|Laboratories|Foundation|' +
     'Institute|University|College|Logistics|Industries|Enterprises|Media|Studios|Agency|Consulting|Insurance|' +
     'Pharmaceuticals|Pharma|Motors|Foods|Airlines|Networks|Services|Trust|Realty|Properties'
+  // Capitalized proper-noun runs ending in an org suffix. Kept case-sensitive on
+  // purpose: lowercasing it makes the leading {0,4} tokens vacuum up unrelated
+  // function words ("and priya raj at acme health"). Lowercase orgs are left to
+  // the NER model, which has the context the regex lacks.
   const ORG_RE = new RegExp(`\\b([A-Z][\\w&.]*(?:\\s+[A-Z][\\w&.]*){0,4})\\s+(${ORG_SUFFIX})\\b\\.?`, 'g')
-  const TITLE_RE = /\b(?:Mr|Mrs|Ms|Miss|Dr|Prof|Sir|Mx)\.?\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/g
-  const CAP_TOKEN = /\b[A-Z][a-z]+\b/g
+  const TITLE_RE = /\b(?:Mr|Mrs|Ms|Miss|Dr|Prof|Sir|Mx)\.?\s+([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'’-]+(?:\s+[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'’-]+)?)/gi
+  const WORD_TOKEN = /[\p{L}][\p{L}'’.\-]*/gu
+  // Words that often follow a first name but are not surnames, used to suppress
+  // the noisiest false pairs ("mark the", "will you", "grace and").
+  const NAME_STOPWORDS = new Set(
+    ('the a an and or but to of in on at by as so if it its for with from into over about ' +
+      'you your was is are were will would can could should may might must do does did has have had ' +
+      'said says say told get got this that then there here my me we he she they them his her our their ' +
+      'who what when where why how please thanks thank hi hello hey just like only also not no yes ok okay ' +
+      'after before again very really still even more most some any each ' +
+      // common nouns that often trail a first name but are not surnames
+      'period time day days week weeks month months year years note notes list team group call meeting ' +
+      'project account number card key code file page line area level point case plan deal role rate today')
+      .split(' ')
+  )
 
   function sniffProspects(text, lockedSpans) {
     text = text || ''
@@ -108,14 +155,22 @@
       const ni = m.index + m[0].indexOf(m[1])
       push(ni, ni + m[1].length, 'NAME')
     }
-    // adjacent capitalized tokens where the first is a known given name
+    // adjacent word tokens (any case) where the first is a known given name and
+    // the second looks like a surname: a letter-word that is not a common
+    // stopword. Catches "John Smith", "john smith", "JOHN SMITH", "priya raj".
     const toks = []
-    CAP_TOKEN.lastIndex = 0
-    while ((m = CAP_TOKEN.exec(text))) toks.push({ w: m[0], start: m.index, end: m.index + m[0].length })
+    WORD_TOKEN.lastIndex = 0
+    while ((m = WORD_TOKEN.exec(text))) toks.push({ w: m[0], start: m.index, end: m.index + m[0].length })
     for (let i = 0; i < toks.length - 1; i++) {
       const a = toks[i]
       const b = toks[i + 1]
-      if (FIRST_NAMES.has(a.w.toLowerCase()) && /^\s+$/.test(text.slice(a.end, b.start))) {
+      const surname = b.w.replace(/[.'’-]+$/, '')
+      if (
+        FIRST_NAMES.has(a.w.toLowerCase()) &&
+        /^[ \t]+$/.test(text.slice(a.end, b.start)) &&
+        surname.length >= 2 &&
+        !NAME_STOPWORDS.has(surname.toLowerCase())
+      ) {
         push(a.start, b.end, 'NAME')
         i++
       }
@@ -143,8 +198,17 @@
       det.re.lastIndex = 0
       let m
       while ((m = det.re.exec(text)) !== null) {
-        const value = m[0]
-        const start = m.index
+        // A detector may lock only a capture group (e.g. the digits after an SSN
+        // keyword) rather than the whole match.
+        let value = m[0]
+        let start = m.index
+        if (det.group) {
+          const g = m[det.group]
+          if (g == null) continue
+          const gi = m[0].indexOf(g)
+          start = m.index + (gi < 0 ? 0 : gi)
+          value = g
+        }
         const end = start + value.length
         if (det.validate && !det.validate(value)) continue
         if (!claim(start, end)) continue

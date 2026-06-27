@@ -107,6 +107,24 @@ US 10-digit shapes; orgs need a legal/sector suffix.
 | `Acme's roadmap` | lock TERM (`Acme`) | check — possessive boundary |
 | `Project  Falcon` (double space) | lock TERM | **MISS** — whitespace variance |
 
+## Done in the rules pass (2026-06-27) — covered + regression-tested in `npm test`
+- **Phones**: international (`+44 20 7946 0958`, `+91 98765 43210`), US 10-digit,
+  and 7-digit local **when preceded by a phone keyword** (call/tel/mobile/...). A
+  bare `NNN-NNNN` is intentionally NOT locked (too easily a range like `100-2000`).
+- **SSN**: dashes or spaces (`123 45 6789`), and a bare 9-digit run only after an
+  SSN/social keyword. A bare 9-digit number elsewhere is left alone.
+- **Secrets**: added `github_pat_`, `hf_`, JWTs (`eyJ….….…`); `gh[pousr]_` covers
+  more GitHub token types; `sk-` covers `sk-proj-`.
+- **Names (Free nudge)**: the sniffer is now case-insensitive, so `john smith`,
+  `JOHN SMITH`, `priya raj` surface as "exposed". A stopword guard suppresses the
+  noisy pairs (`mark the`, `will you`, `grace period`).
+- **Pro locking**: now locks the UNION of the model and the sniffer, so lowercase
+  names the cased model misses still get caught.
+
+Still model territory (cased BERT underperforms; needs the uncased-model upgrade):
+fully-lowercase orgs (`acme health systems`), lowercase places, single-token and
+diacritic names. These stay as Free "exposed" nudges until the model is swapped.
+
 ## Notes for the upgrade
 - The model already emits PER/ORG/LOC (see `src/ner-aggregate.js`), so most NAME /
   ORG / LOCATION misses above should resolve once Pro NER runs in-page.
