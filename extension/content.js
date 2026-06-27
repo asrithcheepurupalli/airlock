@@ -35,6 +35,8 @@
   let nerSpans = [] // on-device name/place detections for the current draft
   let lastScanned = null // null so the first (even empty) scan warms the model
   let nerReady = false // flips true on the first successful model response
+  let nerFailed = false // model could not load / errored -> fall back to the sniffer
+  let nerWarmStart = 0 // when we first asked, to time out a model that never warms
 
   chrome.storage?.sync?.get(['terms'], (r) => {
     termList = (r.terms || '').split(',').map((t) => t.trim()).filter(Boolean)
@@ -43,18 +45,29 @@
   // Ask the offscreen model (via the service worker) to find names/places.
   // Best-effort: any failure just leaves nerSpans empty and rules/terms still run.
   function requestNer(text) {
-    if (!proActive || !USE_MODEL) return
+    if (!proActive || !USE_MODEL || nerFailed) return
     if (text === lastScanned) return
     lastScanned = text
+    // Don't strand Pro on "loading names…" if the model never warms (offscreen
+    // blocked, load error, very slow): after a grace period, fall back to the
+    // heuristic sniffer so names/orgs still get locked.
+    if (!nerWarmStart) {
+      nerWarmStart = Date.now()
+      setTimeout(() => { if (!nerReady) { nerFailed = true; refresh() } }, 12000)
+    }
     try {
       chrome.runtime.sendMessage({ type: 'airlock-ner', text }, (resp) => {
-        if (chrome.runtime.lastError || !resp || !resp.ok) return
+        if (chrome.runtime.lastError || !resp || !resp.ok) {
+          // a hard error (no offscreen doc, model failed to load) -> stop waiting
+          if (chrome.runtime.lastError || (resp && resp.error)) { nerFailed = true; refresh() }
+          return
+        }
         nerReady = true
         nerSpans = resp.spans || []
         refresh()
       })
     } catch (_e) {
-      /* messaging unavailable; rules + terms still apply */
+      nerFailed = true // messaging unavailable; sniffer + rules still apply
     }
   }
 
@@ -114,11 +127,18 @@
     }
     copyText(text)
     el.focus()
+    // Select the whole draft so one paste overwrites it. execCommand('selectAll')
+    // is the most editor-agnostic way (works in Quill/Gemini where a manual range
+    // over the node sometimes doesn't catch); fall back to a manual range.
+    let selected = false
+    try { selected = document.execCommand('selectAll', false, null) } catch (_e) {}
     const sel = window.getSelection()
-    sel.removeAllRanges()
-    const range = document.createRange()
-    range.selectNodeContents(el)
-    sel.addRange(range)
+    if (!selected || sel.isCollapsed) {
+      sel.removeAllRanges()
+      const range = document.createRange()
+      range.selectNodeContents(el)
+      sel.addRange(range)
+    }
     return 'paste'
   }
 
@@ -174,8 +194,9 @@
       ? (USE_MODEL && nerReady ? nerSpans.concat(sniffProspects(text, base.spans)) : sniffProspects(text, base.spans))
       : []
     const { spans } = proActive ? redact(text, termList, lockNames) : base
-    // PRO + model: while it warms, never claim "clean" for names we haven't checked
-    if (proActive && USE_MODEL && !nerReady) {
+    // PRO + model: while it warms, never claim "clean" for names we haven't
+    // checked. But if the model failed/timed out, fall through to sniffer locking.
+    if (proActive && USE_MODEL && !nerReady && !nerFailed) {
       pill.classList.add('airlock-warming')
       proBtn.hidden = true
       pill.classList.toggle('airlock-armed', spans.length > 0)
