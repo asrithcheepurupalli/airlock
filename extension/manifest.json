@@ -3,7 +3,11 @@
   "name": "Airlock, privacy firewall for AI",
   "version": "0.1.0",
   "description": "Strips emails, secrets, cards and your sensitive terms out of your prompt on-device before it reaches ChatGPT or Claude, then restores them in the answer.",
-  "permissions": ["storage"],
+  "permissions": ["storage", "offscreen"],
+  "background": { "service_worker": "background.js" },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
   "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
   "content_scripts": [
     {

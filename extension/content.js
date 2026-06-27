@@ -18,7 +18,7 @@
   // The on-device NER model is a future precision upgrade. Until its offscreen host
   // is wired into the manifest, Pro locks names/orgs with the heuristic sniffer, so
   // the paywall is real and works today with zero network and zero model.
-  const USE_MODEL = false
+  const USE_MODEL = true
   const PRICING_URL = 'https://airlock.made-by-ac.com/#pricing'
 
   // Summarize suspected (but unlocked) names/orgs for the upsell, e.g. "2 names, 1 org".

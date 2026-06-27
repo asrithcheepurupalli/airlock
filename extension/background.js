@@ -19,10 +19,9 @@ async function ensureOffscreen() {
   await creating
 }
 
-// Warm the offscreen model up front instead of on the first keystroke.
-chrome.runtime.onInstalled.addListener(() => ensureOffscreen().catch(() => {}))
-chrome.runtime.onStartup.addListener(() => ensureOffscreen().catch(() => {}))
-
+// No eager warm: the offscreen document (which loads the 104MB model) is created
+// lazily, only when a Pro user's content script actually asks for name detection.
+// Free users never trigger 'airlock-ner', so they never pay the model's cost.
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg?.type !== 'airlock-ner') return
   ;(async () => {
