@@ -18,6 +18,34 @@ const LEAK = [
   ['4929 4929 4929 4929', 'payment data'],
 ]
 
+// CTA targets. Swap STORE_URL for the Chrome Web Store listing once it is live,
+// and PRO_URL for the Stripe checkout once payments are wired. Until then the
+// buttons collect interest instead of dead-ending.
+const STORE_URL = '' // e.g. https://chrome.google.com/webstore/detail/<id>
+const PRO_URL = '' // e.g. Stripe payment link
+const links = {
+  free: STORE_URL || 'mailto:hello@made-by-ac.com?subject=Notify%20me%20when%20Airlock%20launches',
+  pro: PRO_URL || 'mailto:hello@made-by-ac.com?subject=Airlock%20Pro%20waitlist',
+  talk: 'mailto:hello@made-by-ac.com?subject=Airlock%20for%20my%20team',
+}
+const freeLabel = STORE_URL ? 'Add to Chrome, free' : 'Notify me at launch'
+const proLabel = PRO_URL ? 'Get Pro, $129 once' : 'Join the Pro waitlist'
+
+const STAKES = [
+  ['Deleted is not deleted', 'A 2025 court order forced OpenAI to preserve chats people had already erased. The provider keeps a copy whether you want it or not.'],
+  ['No agreement protects you', 'Consumer ChatGPT and Claude offer no business associate agreement. For a therapist or a lawyer, a single paste can be the violation.'],
+  ['Trained on by default', 'Consumer chatbots learn from what you type unless you dig through settings to opt out, and even then a copy was already sent.'],
+]
+
+const AUDIENCE = [
+  ['Therapists and clinicians', 'Draft notes and letters without putting a client where a consumer chatbot can keep them.'],
+  ['Lawyers and small firms', 'Confidentiality is the job. Airlock is the thin layer that lets AI help without the privileged details going with it.'],
+  ['Founders and developers', 'Paste the client brief, the API key, the proprietary code. Airlock makes sure there is nothing in it to leak.'],
+  ['Finance and accounting', 'Account numbers, balances, client names. Get the analysis without handing over the ledger.'],
+  ['HR and recruiting', 'Salaries, reviews, candidate details. Use AI on the words without exposing the people.'],
+  ['Consultants and agencies', 'Every client is someone else\'s secret. Keep their names and numbers off a third party\'s servers.'],
+]
+
 export default function App() {
   useEffect(() => {
     const lenis = new Lenis({ duration: 0.9, smoothWheel: true })
@@ -62,9 +90,16 @@ export default function App() {
           word reaches ChatGPT or Claude. Then it puts your real values back into the
           answer. The model only ever sees placeholders.</p>
 
+        <div className="hero-cta">
+          <a className="btn-primary" href={links.free}>{freeLabel}</a>
+          <a className="btn-ghost" href="#how">See how it works</a>
+        </div>
+
         <div className="demo-frame">
           <div className="demo-frame-head">
-            <span>Try it now. Nothing you type here leaves your machine.</span>
+            <span className="demo-dots"><i /><i /><i /></span>
+            <span className="demo-title"><Wordmark name="airlock" /> live demo</span>
+            <span className="demo-note">nothing here leaves your machine</span>
           </div>
           <Demo />
         </div>
@@ -73,10 +108,16 @@ export default function App() {
       <section className="band">
         <div className="band-inner">
           <h2>What we are solving</h2>
-          <p className="section-lede">Every time a professional pastes a real prompt into
-            ChatGPT, confidential data leaves their device. There is no business associate
-            agreement on consumer ChatGPT, so for a therapist or a lawyer that paste can
-            itself be a violation, and consumer chatbots now train on it by default.</p>
+          <p className="section-lede">Every day, people paste things into ChatGPT they would
+            never post in public: a client's name, a patient's history, an API key, a contract
+            clause. The moment you hit send, it is on someone else's servers, and the provider's
+            privacy toggle acts too late to help.</p>
+
+          <div className="stakes">
+            {STAKES.map(([t, d]) => (
+              <div className="stake" key={t}><h4>{t}</h4><p>{d}</p></div>
+            ))}
+          </div>
 
           <div className="contrast">
             <div className="contrast-col leak">
@@ -134,46 +175,48 @@ export default function App() {
 
       <section className="who" id="who">
         <h2>Who it is for</h2>
+        <p className="section-lede center">It is not three professions, it is a habit. Anyone
+          whose work touches other people's secrets, and who has started to lean on AI to move
+          faster, needs a layer between the two.</p>
         <div className="audience">
-          <div className="aud"><h3>Therapists</h3><p>Keep using the tools you like without
-            putting a client's name where a consumer chatbot can keep it.</p></div>
-          <div className="aud"><h3>Small law firms</h3><p>Confidentiality is the job. Airlock
-            is the thin layer that lets the AI help without the privileged details going with it.</p></div>
-          <div className="aud"><h3>Indie studios</h3><p>Paste the client brief, the API key,
-            the proprietary code. Airlock makes sure there is nothing in it to leak.</p></div>
+          {AUDIENCE.map(([t, d]) => (
+            <div className="aud" key={t}><h3>{t}</h3><p>{d}</p></div>
+          ))}
         </div>
+        <p className="who-foot">And honestly, anyone who has ever pasted something into ChatGPT
+          and hesitated, just for a second, before hitting send.</p>
       </section>
 
       <section className="pricing" id="pricing">
         <h2>Pricing</h2>
-        <p className="section-lede center">Detection runs on your machine, so the free tier
-          is genuinely free to give away. You pay when you want it to live inside ChatGPT and
-          Claude and work without thinking about it.</p>
+        <p className="section-lede center">Everything runs on your machine, so Free is genuinely
+          free to give away. Pro adds the on-device model that catches the hardest thing to spot
+          on your own: the people.</p>
         <div className="tiers">
           <div className="tier">
             <h3>Free</h3>
             <p className="price">$0</p>
-            <p className="tier-sub">The redactor, forever.</p>
+            <p className="tier-sub">Yours forever, no account.</p>
             <ul>
-              <li>Redact anything in the toolbar popup</li>
-              <li>Rules for emails, secrets, cards, IDs</li>
+              <li>Lock data in the popup and in-page</li>
+              <li>Rules for emails, cards, secrets, IDs</li>
               <li>Your own sensitive term list</li>
-              <li>Nothing ever leaves your device</li>
+              <li>Unlimited. No daily limits, ever</li>
             </ul>
-            <a className="tier-btn ghost" href="#talk">Install free</a>
+            <a className="tier-btn ghost" href={links.free}>{freeLabel}</a>
           </div>
           <div className="tier featured">
             <span className="tier-flag">Most popular</span>
             <h3>Pro</h3>
-            <p className="price">$15<span>/mo</span></p>
-            <p className="tier-sub">or $129 once, yours for good.</p>
+            <p className="price">$129<span> once</span></p>
+            <p className="tier-sub">Pay once. No subscription, ever.</p>
             <ul>
-              <li>Works right inside ChatGPT and Claude</li>
-              <li>On-device model catches names and places</li>
-              <li>Answers rehydrate automatically</li>
-              <li>Vertical term packs (health, legal, code)</li>
+              <li>Everything in Free, plus the model</li>
+              <li>Auto-catches names, orgs and places</li>
+              <li>Curated packs for health, legal, code</li>
+              <li>Replies restore your real values, locally</li>
             </ul>
-            <a className="tier-btn" href="#talk">Get Pro</a>
+            <a className="tier-btn" href={links.pro}>{proLabel}</a>
           </div>
           <div className="tier">
             <h3>Practice</h3>
@@ -182,12 +225,14 @@ export default function App() {
             <ul>
               <li>Seats for your whole team</li>
               <li>Term packs tuned to your matters</li>
-              <li>An audit trail you can show a regulator</li>
+              <li>A usage trail you can show a regulator</li>
               <li>Set up and supported by our studio</li>
             </ul>
-            <a className="tier-btn ghost" href="#talk">Talk to us</a>
+            <a className="tier-btn ghost" href={links.talk}>Talk to us</a>
           </div>
         </div>
+        <p className="pricing-note">Pro activates with an offline license key. Even when you pay,
+          the extension still makes no network requests of its own. The proof survives the paywall.</p>
       </section>
 
       <section className="cta" id="talk">

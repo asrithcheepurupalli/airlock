@@ -7,9 +7,9 @@
   --line: #ddd5c8;      /* paper-line */
   --card: #fbfaf6;      /* raised paper */
   --ok: #15803d;        /* functional safe-state green (one extra accent) */
-  --red: #c8102e;       /* signature accent — the dot, marks, danger */
+  --red: #c8102e;       /* signature accent - the dot, marks, danger */
   --red-deep: #8e0f23;
-  --gold: #bd9b4e;      /* secondary accent — provenance, quiet luxe */
+  --gold: #bd9b4e;      /* secondary accent - provenance, quiet luxe */
   --accent: #bd9b4e;
   --display: 'Fraunces', Georgia, 'Times New Roman', serif;
   --sans: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
@@ -74,17 +74,34 @@ h1, h2, h3 { font-family: var(--display); font-weight: 500; letter-spacing: -0.0
   color: #3a3a34; line-height: 1.6;
 }
 
-/* ---- demo frame ---- */
+/* hero CTAs */
+.hero-cta { display: flex; gap: 12px; justify-content: center; margin: 28px 0 4px; flex-wrap: wrap; }
+.btn-primary { background: var(--ink); color: var(--bg); text-decoration: none; padding: 13px 24px;
+  border-radius: 12px; font-weight: 600; font-size: 15px; transition: transform 0.15s ease, box-shadow 0.2s ease; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 30px -12px rgba(11, 11, 12, 0.55); }
+.btn-ghost { background: transparent; color: var(--ink); text-decoration: none; padding: 13px 22px;
+  border-radius: 12px; font-weight: 600; font-size: 15px; border: 1px solid var(--line); transition: border-color 0.2s ease; }
+.btn-ghost:hover { border-color: #b9b2a4; }
+
+/* ---- demo frame (app window) ---- */
 .demo-frame {
-  margin-top: 40px; text-align: left;
+  margin-top: 44px; text-align: left;
   border: 1px solid var(--line); border-radius: 18px;
   background: var(--card); overflow: hidden;
-  box-shadow: 0 20px 60px -30px rgba(26, 26, 23, 0.4);
+  box-shadow: 0 40px 90px -50px rgba(11, 11, 12, 0.55);
 }
 .demo-frame-head {
-  padding: 11px 18px; border-bottom: 1px solid var(--line);
-  background: var(--bg-2); font-size: 13px; color: var(--muted);
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 16px; border-bottom: 1px solid var(--line); background: var(--bg-2);
 }
+.demo-dots { display: inline-flex; gap: 6px; }
+.demo-dots i { width: 11px; height: 11px; border-radius: 50%; background: #d9d2c5; }
+.demo-dots i:first-child { background: #e0837e; }
+.demo-dots i:nth-child(2) { background: #e3c07a; }
+.demo-dots i:last-child { background: #9fc3a4; }
+.demo-title { font-size: 14px; }
+.demo-title .wordmark { font-size: 15px; }
+.demo-note { margin-left: auto; font-size: 12px; color: var(--muted); }
 .demo { padding: 20px; }
 .demo-input { margin-bottom: 6px; }
 
@@ -163,6 +180,16 @@ button.link { background: none; color: var(--muted); padding: 0; font-size: 12px
 .safe-text { font-size: 14.5px; line-height: 1.7; background: #f6f8f5; border: 1px solid #d6e2d6; border-radius: 10px; padding: 14px; }
 .safe-text em { font-style: normal; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: var(--ok); background: #eef5ee; padding: 1px 4px; border-radius: 4px; }
 .contrast-foot { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+
+/* ---- stakes (what we are solving) ---- */
+.stakes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 8px 0 40px; }
+.stake { border: 1px solid var(--line); border-radius: 16px; background: var(--card); padding: 22px; border-top: 3px solid var(--red); }
+.stake h4 { font-family: var(--display); font-weight: 500; font-size: 18px; margin: 0 0 8px; letter-spacing: -0.01em; }
+.stake p { font-size: 14px; color: #3a3a34; margin: 0; line-height: 1.6; }
+
+/* audience closing line */
+.who-foot { max-width: 60ch; margin: 34px auto 0; text-align: center; font-family: var(--display);
+  font-style: italic; font-size: clamp(18px, 2.4vw, 24px); color: var(--ink); line-height: 1.4; }
 
 /* ---- how / steps ---- */
 .how, .who { max-width: 1000px; margin: 72px auto 0; padding: 0 24px; }
@@ -270,6 +297,7 @@ button.link { background: none; color: var(--muted); padding: 0; font-size: 12px
 .price { font-family: var(--display); font-size: 34px; margin: 4px 0 2px; }
 .price span { font-family: var(--sans); font-size: 15px; color: var(--muted); font-weight: 400; }
 .tier-sub { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
+.pricing-note { max-width: 58ch; margin: 26px auto 0; font-size: 13px; color: var(--muted); line-height: 1.6; }
 .tier ul { list-style: none; margin: 0 0 20px; padding: 0; flex: 1; }
 .tier li { font-size: 13.5px; padding: 7px 0 7px 22px; position: relative; border-top: 1px solid var(--line); color: #3a3a34; }
 .tier li:before { content: ''; position: absolute; left: 4px; top: 13px; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
@@ -288,7 +316,7 @@ button.link { background: none; color: var(--muted); padding: 0; font-size: 12px
 @media (max-width: 760px) {
   .nav-right { gap: 14px; }
   .nav-right a:not(.nav-cta) { display: none; }
-  .grid, .contrast, .steps, .pillars, .audience { grid-template-columns: 1fr; }
+  .grid, .contrast, .steps, .pillars, .audience, .stakes { grid-template-columns: 1fr; }
   .band { padding: 52px 18px; margin-top: 52px; }
   .how, .who { margin-top: 52px; }
   .stages-inner { padding: 0 18px; }

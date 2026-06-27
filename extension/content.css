@@ -70,6 +70,28 @@
 }
 #airlock-pill.airlock-armed .airlock-btn:hover { background: #a90e27; }
 
+/* upsell: suspected names/orgs that free cannot lock (heuristic) */
+#airlock-pill .airlock-pro {
+  border: none;
+  background: rgba(189, 155, 78, 0.18);
+  color: #d8b765;
+  border-radius: 999px;
+  padding: 5px 11px;
+  font: 600 11.5px ui-sans-serif, sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.12s ease;
+}
+#airlock-pill .airlock-pro::before { content: "🔒 "; }
+#airlock-pill .airlock-pro:hover { background: rgba(189, 155, 78, 0.3); }
+#airlock-pill .airlock-pro:active { transform: scale(0.95); }
+#airlock-pill .airlock-pro[hidden] { display: none; }
+
+/* when names/orgs are the only thing present, the CTA becomes the upsell (gold) */
+#airlock-pill[data-mode="pro"] .airlock-count { color: #d8b765; }
+#airlock-pill[data-mode="pro"] .airlock-btn { background: #bd9b4e; color: #0b0b0c; }
+#airlock-pill[data-mode="pro"] .airlock-btn:hover { background: #cdab5c; }
+
 /* success ring after a redact */
 #airlock-pill.airlock-flash { animation: airlock-flash-anim 0.65s ease; }
 @keyframes airlock-flash-anim {

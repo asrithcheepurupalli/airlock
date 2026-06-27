@@ -12,63 +12,122 @@
         font-weight: 100 900; font-style: italic; font-display: swap;
       }
       :root {
-        --paper: #f6f3ee; --card: #fbfaf6; --ink: #0b0b0c; --grey: #7c7770;
-        --line: #ddd5c8; --red: #c8102e; --ok: #15803d;
+        --paper: #f6f3ee; --card: #fbfaf6; --field: #ffffff; --ink: #0b0b0c; --grey: #7c7770;
+        --line: #ddd5c8; --red: #c8102e; --ok: #15803d; --okbg: #eef5ee; --okline: #bcd6bf;
         --sans: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
         --mono: ui-monospace, "SF Mono", Menlo, monospace;
       }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #0e0e0f; --card: #161616; --field: #1b1b1c; --ink: #f4f1ea; --grey: #9a948b;
+          --line: #2a2a2b; --okbg: #14241a; --okline: #2f5a3c;
+        }
+      }
       * { box-sizing: border-box; }
       body {
-        width: 372px; margin: 0; padding: 20px 20px 16px; background: var(--paper);
+        width: 376px; margin: 0; padding: 20px 20px 16px; background: var(--paper);
         color: var(--ink); font: 13px/1.55 var(--sans); -webkit-font-smoothing: antialiased;
+        animation: pop-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
       }
+      @keyframes pop-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+      .head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
       .mark { font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 600;
         font-size: 26px; letter-spacing: -0.01em; line-height: 1; }
       .mark .dot { font-style: normal; color: var(--red); }
-      .sub { color: var(--grey); margin: 8px 0 18px; font-size: 12.5px; }
+
+      /* live status chip in the header */
+      .status { font-size: 11px; font-weight: 600; letter-spacing: 0.01em; color: var(--grey);
+        border: 1px solid var(--line); background: var(--card); border-radius: 999px;
+        padding: 4px 11px; white-space: nowrap; transition: all 0.22s ease; }
+      .status.hit { color: #fff; background: var(--red); border-color: var(--red); }
+      .status.clear { color: var(--ok); background: var(--okbg); border-color: var(--okline); }
+
+      .sub { color: var(--grey); margin: 9px 0 18px; font-size: 12.5px; }
 
       label { display: block; font-weight: 600; font-size: 12px; margin: 0 0 7px; }
       label .hint { font-weight: 400; color: var(--grey); }
-      .field { margin-bottom: 16px; }
+      .field { margin-bottom: 15px; }
 
       textarea, input {
-        width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+        width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--field);
         color: var(--ink); padding: 11px 13px; font: 13px/1.5 var(--sans); resize: vertical;
         transition: border-color 0.18s ease, box-shadow 0.18s ease;
       }
-      textarea { min-height: 96px; }
-      textarea::placeholder, input::placeholder { color: #b3ac9f; }
+      textarea { min-height: 92px; }
+      textarea::placeholder, input::placeholder { color: var(--grey); opacity: 0.55; }
       textarea:focus, input:focus { outline: none; border-color: #b9c7bb;
-        box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12); }
+        box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.14); }
 
-      .row { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 9px; }
-      .badge { font-size: 11.5px; font-weight: 600; color: var(--grey); border: 1px solid var(--line);
-        background: #fff; border-radius: 999px; padding: 3px 11px; transition: all 0.2s ease; }
-      .badge.hit { color: var(--ok); border-color: #bcd6bf; background: #eef5ee; }
+      /* live detection chips */
+      .detected { display: flex; flex-wrap: wrap; gap: 6px; min-height: 0; margin: 0 0 14px; }
+      .detected:empty { display: none; }
+      .dchip {
+        --c: var(--grey); display: inline-flex; align-items: center; gap: 6px;
+        font-size: 11.5px; font-weight: 600; color: var(--ink);
+        background: color-mix(in srgb, var(--c) 13%, transparent);
+        border: 1px solid color-mix(in srgb, var(--c) 32%, transparent);
+        border-radius: 999px; padding: 4px 10px 4px 8px;
+        animation: chip-in 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+      .dchip i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+      @keyframes chip-in { from { opacity: 0; transform: scale(0.82); } to { opacity: 1; transform: none; } }
+
+      .outwrap { border: 1px solid var(--line); border-radius: 14px; background: var(--card); overflow: hidden; }
+      .outhead { display: flex; align-items: center; justify-content: space-between;
+        padding: 9px 11px 9px 13px; border-bottom: 1px solid var(--line); }
+      .outlabel { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--grey); }
 
       button.copy {
-        border: none; background: var(--ink); color: var(--paper); border-radius: 10px;
-        padding: 8px 14px; font: 600 12.5px var(--sans); cursor: pointer;
-        transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.2s ease;
+        border: none; background: var(--ink); color: var(--paper); border-radius: 9px;
+        padding: 7px 13px; font: 600 12px var(--sans); cursor: pointer;
+        transition: transform 0.12s ease, opacity 0.2s ease, background 0.2s ease;
       }
-      button.copy:hover { background: #1c1b18; box-shadow: 0 6px 18px rgba(11, 11, 12, 0.22); }
-      button.copy:active { transform: scale(0.95); }
-      button.copy.done { background: var(--ok); }
+      button.copy:hover:not(:disabled) { transform: translateY(-1px); }
+      button.copy:active:not(:disabled) { transform: scale(0.95); }
+      button.copy:disabled { opacity: 0.4; cursor: default; }
+      button.copy.done { background: var(--ok); color: #fff; }
 
       .out {
-        border: 1px solid var(--line); border-radius: 12px; background: #f6f8f5; padding: 12px 13px;
-        min-height: 58px; white-space: pre-wrap; word-break: break-word; font-family: var(--mono);
-        font-size: 12px; line-height: 1.6; color: var(--ink);
+        padding: 13px; min-height: 56px; white-space: pre-wrap; word-break: break-word;
+        font-family: var(--mono); font-size: 12px; line-height: 1.7; color: var(--ink);
       }
-      .out:empty::before { content: "Your redacted version appears here."; color: #b3ac9f; font-style: italic; }
+      .out:empty::before { content: "Your locked version appears here, ready to paste."; color: var(--grey); opacity: 0.7; font-style: italic; }
+      /* placeholder pills inside the locked output */
+      .out .ph {
+        --c: var(--grey); font-family: var(--sans); font-weight: 600; font-size: 11px;
+        color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent);
+        border-bottom: 1.5px solid var(--c); border-radius: 4px; padding: 1px 5px; white-space: nowrap;
+      }
 
-      .foot { color: var(--grey); font-size: 11px; line-height: 1.5; margin: 14px 0 0;
+      .foot { color: var(--grey); font-size: 11px; line-height: 1.5; margin: 15px 0 0;
         padding-top: 12px; border-top: 1px solid var(--line); }
+      .foot b { color: var(--ink); font-weight: 600; }
+
+      /* free-tier upsell: suspected names/orgs we cannot lock */
+      .status.warn { color: #9a7b2e; background: rgba(189, 155, 78, 0.16); border-color: rgba(189, 155, 78, 0.45); }
+      .dchip.pro { --c: #bd9b4e; cursor: pointer; }
+      .dchip.pro:hover { background: color-mix(in srgb, #bd9b4e 24%, transparent); }
+      .out .exp { background: rgba(189, 155, 78, 0.18); border-bottom: 1.5px dashed #bd9b4e;
+        border-radius: 3px; padding: 0 2px; }
+      .pronote { margin: 13px 0 0; font-size: 12px; line-height: 1.6; color: var(--grey); }
+      .pronote[hidden] { display: none; }
+      .pronote b { color: #9a7b2e; font-weight: 600; }
+      .pronote a { color: var(--ink); font-weight: 600; text-decoration: underline; cursor: pointer; }
+      @media (prefers-color-scheme: dark) {
+        .status.warn { color: #d8b765; }
+        .pronote b { color: #d8b765; }
+      }
+
+      @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
     </style>
   </head>
   <body>
-    <div class="mark">airlock<span class="dot">.</span></div>
-    <p class="sub">Redact before you paste. Nothing here leaves your machine.</p>
+    <div class="head">
+      <div class="mark">airlock<span class="dot">.</span></div>
+      <span class="status" id="status">ready</span>
+    </div>
+    <p class="sub">Lock it before you paste. Nothing here leaves your machine.</p>
 
     <div class="field">
       <label for="in">Paste anything sensitive</label>
@@ -80,14 +139,22 @@
       <input id="terms" placeholder="Acme Health Systems, Project Falcon" />
     </div>
 
-    <div class="row">
-      <span class="badge" id="count">0 found</span>
-      <button class="copy" id="copy">Copy redacted</button>
-    </div>
-    <div class="out" id="out"></div>
+    <div class="detected" id="detected"></div>
 
-    <p class="foot">Detection runs in this popup. This extension requests no network
-      permission and makes no requests of its own.</p>
+    <div class="outwrap">
+      <div class="outhead">
+        <span class="outlabel">What leaves your machine</span>
+        <button class="copy" id="copy" disabled>Copy locked</button>
+      </div>
+      <div class="out" id="out"></div>
+    </div>
+
+    <p class="pronote" id="pronote" hidden><span id="pronote-text"></span> still <b>exposed</b>.
+      Pro locks names and organizations automatically, on your device.
+      <a id="proupg">Get Pro</a></p>
+
+    <p class="foot"><b>Provably local.</b> Detection runs in this popup. This extension requests no
+      network permission and makes no requests of its own.</p>
 
     <script src="redact.js"></script>
     <script src="popup.js"></script>

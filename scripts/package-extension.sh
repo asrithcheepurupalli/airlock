@@ -1,25 +1,27 @@
 #!/usr/bin/env bash
-# package-extension.sh — produce the Chrome Web Store upload zip.
+# package-extension.sh — produce the Chrome Web Store upload zip for the FREE build.
 #
-# Run `npm run build:ext` first so the offscreen build, model weights, and ORT
-# runtime are present. This zips only what the extension needs to run, leaving
-# out the store listing art, the source SVG, and the README.
+# The free build is intentionally lean: rules + your sensitive terms, zero network,
+# no model. It zips only what the extension needs to run, and explicitly excludes
+# any Pro/Phase-2 artifacts (the names model, ORT runtime, offscreen document) that
+# may be present on disk from development. The store listing art and source SVG are
+# left out too.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 VERSION=$(node -e "console.log(require('./extension/manifest.json').version)")
 OUT="airlock-extension-v${VERSION}.zip"
 
-# preflight: the heavy build artifacts must exist
-for f in extension/offscreen/offscreen.html \
-         extension/models/Xenova/bert-base-NER/onnx/model_quantized.onnx \
-         extension/ort/ort-wasm-simd-threaded.jsep.wasm; do
-  [ -f "$f" ] || { echo "MISSING: $f  — run: npm run build:ext"; exit 1; }
+# preflight: the free build's required files
+for f in extension/manifest.json extension/redact.js extension/content.js \
+         extension/content.css extension/popup.html extension/popup.js; do
+  [ -f "$f" ] || { echo "MISSING: $f"; exit 1; }
 done
 
 rm -f "$OUT"
 ( cd extension && zip -r -q "../$OUT" . \
-    -x "store/*" "README.md" "icon.svg" ".DS_Store" "**/.DS_Store" )
+    -x "store/*" "models/*" "ort/*" "offscreen/*" "background.js" \
+       "README.md" "icon.svg" ".DS_Store" "**/.DS_Store" )
 
-echo "Built $OUT  ($(du -h "$OUT" | cut -f1))"
+echo "Built $OUT  ($(du -h "$OUT" | cut -f1))  — free build, network-free"
 echo "Upload at: https://chrome.google.com/webstore/devconsole"

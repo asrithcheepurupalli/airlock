@@ -1,4 +1,4 @@
-// background.js — service worker. Its only job is to keep one offscreen document
+// background.js - service worker. Its only job is to keep one offscreen document
 // alive (which hosts the model) and relay detection requests to it.
 
 let creating = null
