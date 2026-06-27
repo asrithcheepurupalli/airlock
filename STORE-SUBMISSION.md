@@ -56,7 +56,7 @@ breaking that guarantee.
   permission: rules (emails, cards, secrets, IDs) plus the user's own
   sensitive-term list, and for Pro an on-device names model. Nothing is fetched
   or transmitted; this is verifiable in the network tab (the tab stays empty).
-- The on-device model (Xenova/bert-base-NER, quantized) ships inside the package
+- The on-device model (Xenova/bert-base-NER-uncased, quantized) ships in the package
   and runs in an offscreen document via a bundled ONNX/WASM runtime. It is loaded
   only when a user with a valid offline Pro license triggers name detection; free
   users never create the offscreen document. The `wasm-unsafe-eval` CSP entry is

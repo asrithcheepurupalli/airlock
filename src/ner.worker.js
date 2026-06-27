@@ -15,7 +15,7 @@ import { aggregate } from './ner-aggregate.js'
 // Pull weights from the HF CDN on first run, then cache. (Bundled in prod.)
 env.allowLocalModels = false
 
-const MODEL = 'Xenova/bert-base-NER'
+const MODEL = 'Xenova/bert-base-NER-uncased'
 let extractor = null
 let loading = null
 

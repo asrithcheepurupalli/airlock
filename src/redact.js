@@ -17,30 +17,41 @@ const DETECTORS = [
   {
     type: 'SECRET',
     label: 'API key / token',
-    // OpenAI, Anthropic, AWS, GitHub, Google, Slack, generic bearer-ish tokens.
-    // Allow hyphens/underscores inside the token body (sk-live-…, sk_test_…, sk-ant-…).
-    re: /\b(sk[-_][a-zA-Z0-9_-]{16,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z\-_]{20,}|xox[baprs]-[0-9A-Za-z-]{10,})\b/g,
+    // OpenAI/Anthropic (sk-, sk-proj-), AWS, GitHub (ghp_/gho_/…, github_pat_),
+    // Google, Slack, HuggingFace. Distinctive prefixes keep false positives low.
+    re: /\b(sk[-_][a-zA-Z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{22,}|AIza[0-9A-Za-z\-_]{20,}|xox[baprs]-[0-9A-Za-z-]{10,}|hf_[A-Za-z0-9]{30,})\b/g,
   },
+  // JSON Web Token: header.payload.signature, each base64url.
+  { type: 'SECRET', label: 'JWT', re: /\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{6,}/g },
   {
     type: 'EMAIL',
     label: 'Email',
     re: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g,
   },
-  {
-    type: 'SSN',
-    label: 'SSN',
-    re: /\b\d{3}-\d{2}-\d{4}\b/g,
-  },
+  // SSN with dashes OR spaces (the 3-2-4 grouping is distinctive).
+  { type: 'SSN', label: 'SSN', re: /\b\d{3}[-\s]\d{2}[-\s]\d{4}\b/g },
+  // SSN as a bare 9-digit run, only right after an SSN/social keyword. Digits only.
+  { type: 'SSN', label: 'SSN', re: /\b(?:ssn|social(?:\s+security)?(?:\s+(?:no|number|#))?)\b[:#\s]*(\d{9})\b/gi, group: 1 },
   {
     type: 'CARD',
     label: 'Card number',
     re: /\b\d(?:[ -]?\d){12,15}\b/g, // starts and ends on a digit, no trailing separator
     validate: luhn, // avoid eating order numbers / long IDs
   },
+  // Phones: international (+CC then 7-14 digits) and US 10-digit, digit-count checked.
   {
     type: 'PHONE',
     label: 'Phone',
-    re: /(\+?\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/g,
+    re: /(?:\+\d{1,3}[\s.-]?\d(?:[\s.-]?\d){6,13}|(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})(?:\s?(?:x|ext\.?)\s?\d{1,5})?/g,
+    validate: phoneValid,
+  },
+  // 7-digit local number, only after a phone keyword (a bare NNN-NNNN is too easily
+  // a range like 100-2000 to lock on its own). Locks the digits only.
+  {
+    type: 'PHONE',
+    label: 'Phone',
+    re: /\b(?:call|phone|telephone|tel|mobile|cell|fax|contact|dial)\b[:.\s#]*(\d{3}[-.]\d{4})/gi,
+    group: 1,
   },
   {
     type: 'IP',
@@ -48,6 +59,13 @@ const DETECTORS = [
     re: /\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b/g,
   },
 ]
+
+function phoneValid(v) {
+  const d = v.replace(/\D/g, '')
+  if (d.length < 7 || d.length > 15) return false
+  if (/^(\d)\1+$/.test(d)) return false // all-same-digit isn't a phone
+  return true
+}
 
 function luhn(value) {
   const digits = value.replace(/[^\d]/g, '')
@@ -115,8 +133,17 @@ export function redact(text, customTerms = [], nerSpans = []) {
     det.re.lastIndex = 0
     let m
     while ((m = det.re.exec(text)) !== null) {
-      const value = m[0]
-      const start = m.index
+      // A detector may lock only a capture group (e.g. the digits after an SSN or
+      // phone keyword) rather than the whole keyword+number match.
+      let value = m[0]
+      let start = m.index
+      if (det.group) {
+        const g = m[det.group]
+        if (g == null) continue
+        const gi = m[0].indexOf(g)
+        start = m.index + (gi < 0 ? 0 : gi)
+        value = g
+      }
       const end = start + value.length
       if (det.validate && !det.validate(value)) continue
       if (!claim(start, end)) continue // a more specific detector already took it

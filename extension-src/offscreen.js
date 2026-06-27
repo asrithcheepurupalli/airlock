@@ -27,7 +27,7 @@ env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('ort/')
 // chrome-extension:// responses can't go in the browser Cache API; skip it.
 env.useBrowserCache = false
 
-const MODEL = 'Xenova/bert-base-NER'
+const MODEL = 'Xenova/bert-base-NER-uncased'
 let extractor = null
 let loading = null
 

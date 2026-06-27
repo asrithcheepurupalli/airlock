@@ -121,9 +121,22 @@ US 10-digit shapes; orgs need a legal/sector suffix.
 - **Pro locking**: now locks the UNION of the model and the sniffer, so lowercase
   names the cased model misses still get caught.
 
-Still model territory (cased BERT underperforms; needs the uncased-model upgrade):
-fully-lowercase orgs (`acme health systems`), lowercase places, single-token and
-diacritic names. These stay as Free "exposed" nudges until the model is swapped.
+## Model swap (2026-06-27) — DONE: cased → uncased NER
+Swapped `Xenova/bert-base-NER` → `Xenova/bert-base-NER-uncased`. Measured in Node
+(`@huggingface/transformers`) on cased / lowercase / all-caps text: the uncased
+model now detects names, orgs and places in **all** casings, where the cased model
+returned nothing on lowercase. Also fixed `ner-aggregate.js` to locate entities
+case-insensitively (the uncased model emits lowercased surface, so it must still
+be found in cased source) while preserving the original casing in the span.
+
+Verified examples (Pro, in-model):
+- `met john smith at acme corp in london.` → NAME, ORG, LOCATION
+- `EMAIL SARAH CONNOR IN NEW YORK` → NAME, LOCATION
+- `from priya raj and arjun mehta` → NAME, NAME
+- `the operating systems were slow today` → (none) — no false positive
+
+So lowercase orgs/places and lowercase/all-caps/single-token names are now handled
+by the model for Pro. The Free heuristic sniffer still surfaces the common cases.
 
 ## Notes for the upgrade
 - The model already emits PER/ORG/LOC (see `src/ner-aggregate.js`), so most NAME /

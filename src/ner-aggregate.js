@@ -57,8 +57,12 @@ export function aggregate(tokens, text) {
   }
   flush()
 
-  // 2) + 3) reconstruct surface form and locate it in the original text
+  // 2) + 3) reconstruct surface form and locate it in the original text.
+  // Search case-insensitively: an uncased model emits lowercased pieces, so the
+  // surface ("john smith") must still be found in cased source ("John Smith").
+  // The span is sliced from the ORIGINAL text, preserving real casing.
   const spans = []
+  const lower = text.toLowerCase()
   let cursor = 0
   for (const g of groups) {
     if (!TAG[g.base] || g.score < MIN_SCORE) continue
@@ -67,7 +71,7 @@ export function aggregate(tokens, text) {
       surface += w.startsWith('##') ? w.slice(2) : (i === 0 ? '' : ' ') + w
     })
     if (!surface) continue
-    const idx = text.indexOf(surface, cursor)
+    const idx = lower.indexOf(surface.toLowerCase(), cursor)
     if (idx === -1) continue // reconstruction didn't match (rare) — skip safely
     const start = idx
     const end = idx + surface.length

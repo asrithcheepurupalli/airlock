@@ -6,12 +6,12 @@
 // Run AFTER `vite build --config vite.ext.config.js`.
 // Usage: node scripts/build-extension.mjs
 
-import { mkdir, writeFile, copyFile, stat } from 'node:fs/promises'
+import { mkdir, writeFile, copyFile, stat, rm } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const MODEL = 'Xenova/bert-base-NER'
+const MODEL = 'Xenova/bert-base-NER-uncased'
 const BASE = `https://huggingface.co/${MODEL}/resolve/main`
 const FILES = ['config.json', 'tokenizer.json', 'tokenizer_config.json', 'onnx/model_quantized.onnx']
 
@@ -41,6 +41,10 @@ async function copyOrt() {
     console.log(`  copied ${f} ... ${fmt(size)}`)
   }
 }
+
+// Wipe any previously-bundled model first, so swapping MODEL never leaves a stale
+// model dir behind to double the package size.
+await rm(join(root, 'extension', 'models'), { recursive: true, force: true })
 
 console.log('Bundling model weights:')
 for (const f of FILES) await download(f)
