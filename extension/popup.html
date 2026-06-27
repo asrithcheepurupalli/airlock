@@ -119,6 +119,27 @@
         .pronote b { color: #d8b765; }
       }
 
+      /* Pro activation zone */
+      .prozone { margin: 14px 0 0; }
+      .prolink { background: none; border: none; padding: 0; color: var(--grey);
+        font: 600 11.5px var(--sans); cursor: pointer; text-decoration: underline; }
+      .prolink:hover { color: var(--ink); }
+      .actpanel { margin-top: 11px; display: flex; flex-direction: column; gap: 8px; }
+      .actpanel[hidden] { display: none; }
+      .actpanel input { font-family: var(--mono); font-size: 11.5px; }
+      .actbtn { border: none; background: var(--ink); color: var(--paper); border-radius: 9px;
+        padding: 9px; font: 600 12px var(--sans); cursor: pointer; transition: opacity 0.2s ease; }
+      .actbtn:disabled { opacity: 0.45; cursor: default; }
+      .actmsg { font-size: 11.5px; margin: 1px 0 0; min-height: 14px; line-height: 1.4; }
+      .actmsg.err { color: var(--red); }
+      .actmsg.ok { color: var(--ok); }
+      .actmsg a { color: var(--ink); font-weight: 600; }
+      .probadge { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 600;
+        color: var(--ok); background: var(--okbg); border: 1px solid var(--okline); border-radius: 999px;
+        padding: 4px 11px; }
+      .probadge[hidden] { display: none; }
+      .probadge a { color: var(--grey); font-weight: 500; cursor: pointer; text-decoration: underline; }
+
       @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
     </style>
   </head>
@@ -153,10 +174,22 @@
       Pro locks names and organizations automatically, on your device.
       <a id="proupg">Get Pro</a></p>
 
+    <div class="prozone">
+      <button class="prolink" id="actoggle" type="button">Have a Pro key? Activate</button>
+      <div class="actpanel" id="actpanel" hidden>
+        <input id="lickey" spellcheck="false" placeholder="Paste your Airlock Pro key" />
+        <button class="actbtn" id="actbtn" type="button">Activate Pro</button>
+        <p class="actmsg" id="actmsg"></p>
+      </div>
+      <span class="probadge" id="probadge" hidden>Pro active <a id="deact" title="Remove this license">remove</a></span>
+    </div>
+
     <p class="foot"><b>Provably local.</b> Detection runs in this popup. This extension requests no
       network permission and makes no requests of its own.</p>
 
     <script src="redact.js"></script>
+    <script src="license-pubkey.js"></script>
+    <script src="license.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

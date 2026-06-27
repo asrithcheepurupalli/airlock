@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+.license-private-key
 
 # deps & build output
 node_modules/

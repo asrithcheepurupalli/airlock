@@ -13,7 +13,12 @@
 
 ;(function () {
   const { redact, rehydrate, sniffProspects } = window.AirlockEngine
-  const PRO = false // free build: rules + terms only, zero network. Pro unlocks names.
+  const License = window.AirlockLicense
+  let proActive = false // flipped true once a verified offline Pro license is present
+  // The on-device NER model is a future precision upgrade. Until its offscreen host
+  // is wired into the manifest, Pro locks names/orgs with the heuristic sniffer, so
+  // the paywall is real and works today with zero network and zero model.
+  const USE_MODEL = false
   const PRICING_URL = 'https://airlock.made-by-ac.com/#pricing'
 
   // Summarize suspected (but unlocked) names/orgs for the upsell, e.g. "2 names, 1 org".
@@ -38,7 +43,7 @@
   // Ask the offscreen model (via the service worker) to find names/places.
   // Best-effort: any failure just leaves nerSpans empty and rules/terms still run.
   function requestNer(text) {
-    if (!PRO) return
+    if (!proActive || !USE_MODEL) return
     if (text === lastScanned) return
     lastScanned = text
     try {
@@ -153,14 +158,20 @@
       return
     }
     const text = boxText(box)
-    if (PRO) {
+    if (proActive && USE_MODEL) {
       // debounce the on-device names scan; rule/term redaction is instant below
       clearTimeout(nerTimer)
       nerTimer = setTimeout(() => requestNer(text), 350)
     }
-    const { spans } = redact(text, termList, PRO ? nerSpans : [])
-    // PRO: while the model warms, never claim "clean" for names we haven't checked
-    if (PRO && !nerReady) {
+    const base = redact(text, termList)
+    // Pro locks suspected names/orgs too: the model's spans once it ships, else the
+    // heuristic sniffer. Free leaves them surfaced as "exposed" below.
+    const lockNames = proActive
+      ? (USE_MODEL && nerReady ? nerSpans : sniffProspects(text, base.spans))
+      : []
+    const { spans } = proActive ? redact(text, termList, lockNames) : base
+    // PRO + model: while it warms, never claim "clean" for names we haven't checked
+    if (proActive && USE_MODEL && !nerReady) {
       pill.classList.add('airlock-warming')
       proBtn.hidden = true
       pill.classList.toggle('airlock-armed', spans.length > 0)
@@ -169,7 +180,7 @@
     }
     pill.classList.remove('airlock-warming')
     // FREE only: cheaply suspect names/orgs we cannot lock, and surface them.
-    const pros = PRO ? [] : sniffProspects(text, spans)
+    const pros = proActive ? [] : sniffProspects(text, base.spans)
     updatePro(pros, spans.length)
     if (spans.length) {
       pill.dataset.mode = 'lock'
@@ -196,7 +207,11 @@
     const box = findBox()
     if (!box) return
     const text = boxText(box)
-    const { redacted, map, spans } = redact(text, termList, PRO ? nerSpans : [])
+    const cbase = redact(text, termList)
+    const cLockNames = proActive
+      ? (USE_MODEL && nerReady ? nerSpans : sniffProspects(text, cbase.spans))
+      : []
+    const { redacted, map, spans } = proActive ? redact(text, termList, cLockNames) : cbase
     if (!spans.length) {
       // nothing to lock: give a reassuring beat instead of a dead click
       holdUntil = Date.now() + 1600
@@ -210,7 +225,7 @@
     holdUntil = Date.now() + 4000
     pill.classList.remove('airlock-armed')
     // keep the upsell visible: free locked the rules, but names may still be exposed
-    const pros = PRO ? [] : sniffProspects(text, spans)
+    const pros = proActive ? [] : sniffProspects(text, spans)
     updatePro(pros, 1)
     countEl.textContent = how === 'inplace' ? 'Locked ✓' : 'Locked, press ⌘V'
     pill.classList.add('airlock-flash')
@@ -244,5 +259,21 @@
     document.addEventListener(ev, () => setTimeout(refresh, 0), true)
   }
   setInterval(refresh, 600) // SPA-proof: re-find the box and rescan on a steady tick
-  refresh()
+
+  // --- Pro state, resolved offline from the stored license ----------------
+  async function refreshPro() {
+    if (License) {
+      try { proActive = (await License.state()).pro } catch (_e) { proActive = false }
+    }
+    refresh()
+  }
+  // Reflect activation/removal done in the popup without a page reload.
+  chrome.storage?.onChanged?.addListener((changes, area) => {
+    if (area === 'local' && changes.airlock_license) refreshPro()
+    if (area === 'sync' && changes.terms) {
+      termList = (changes.terms.newValue || '').split(',').map((t) => t.trim()).filter(Boolean)
+      refresh()
+    }
+  })
+  refreshPro()
 })()

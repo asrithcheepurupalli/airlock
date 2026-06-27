@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Activate Airlock Pro</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --paper: #f6f3ee; --card: #fbfaf6; --field: #ffffff; --ink: #0b0b0c; --grey: #7c7770;
+        --line: #ddd5c8; --red: #c8102e; --ok: #15803d; --okbg: #eef5ee; --okline: #bcd6bf;
+        --sans: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        --mono: ui-monospace, "SF Mono", Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #0e0e0f; --card: #161616; --field: #1b1b1c; --ink: #f4f1ea; --grey: #9a948b;
+          --line: #2a2a2b; --okbg: #14241a; --okline: #2f5a3c;
+        }
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; background: var(--paper); color: var(--ink);
+        font: 15px/1.6 var(--sans); -webkit-font-smoothing: antialiased;
+        display: flex; align-items: center; justify-content: center; padding: 32px 20px; }
+      .wrap { width: 100%; max-width: 480px; }
+      .mark { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 600;
+        font-size: 30px; letter-spacing: -0.01em; line-height: 1; }
+      .mark .dot { font-style: normal; color: var(--red); }
+      h1 { font-size: 22px; letter-spacing: -0.01em; margin: 22px 0 6px; }
+      .lede { color: var(--grey); margin: 0 0 24px; }
+      label { display: block; font-weight: 600; font-size: 13px; margin: 0 0 8px; }
+      input { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--field);
+        color: var(--ink); padding: 13px 15px; font: 14px/1.4 var(--mono); }
+      input:focus { outline: none; border-color: #b9c7bb; box-shadow: 0 0 0 3px rgba(21,128,61,0.14); }
+      button { width: 100%; margin-top: 14px; border: none; background: var(--ink); color: var(--paper);
+        border-radius: 11px; padding: 13px; font: 600 14px var(--sans); cursor: pointer;
+        transition: transform 0.12s ease, opacity 0.2s ease; }
+      button:hover:not(:disabled) { transform: translateY(-1px); }
+      button:disabled { opacity: 0.5; cursor: default; }
+      .msg { margin-top: 14px; font-size: 13px; min-height: 18px; }
+      .msg.err { color: var(--red); }
+      .result { margin-top: 22px; border: 1px solid var(--okline); background: var(--okbg);
+        border-radius: 14px; padding: 18px; display: none; }
+      .result.show { display: block; }
+      .result h2 { font-size: 15px; margin: 0 0 4px; }
+      .result p { color: var(--grey); font-size: 13px; margin: 0 0 12px; }
+      .token { font-family: var(--mono); font-size: 12px; line-height: 1.5; word-break: break-all;
+        background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 12px;
+        color: var(--ink); }
+      .copy { margin-top: 12px; background: var(--ok); }
+      .copy.done { background: var(--ink); }
+      ol { color: var(--grey); font-size: 13px; padding-left: 20px; margin: 16px 0 0; }
+      ol li { margin-bottom: 4px; }
+      .foot { margin-top: 28px; color: var(--grey); font-size: 12px; }
+      .foot a { color: var(--ink); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="mark">airlock<span class="dot">.</span></div>
+      <h1>Activate Pro</h1>
+      <p class="lede">Paste the license key from your Gumroad receipt. We turn it into a signed key your
+        extension verifies on your own device, with no further calls home.</p>
+
+      <label for="key">Gumroad license key</label>
+      <input id="key" autocomplete="off" spellcheck="false"
+        placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" />
+      <button id="go">Get my key</button>
+      <p class="msg" id="msg"></p>
+
+      <div class="result" id="result">
+        <h2>You are Pro.</h2>
+        <p>Copy this key and paste it into the extension popup, under "Activate Pro".</p>
+        <div class="token" id="token"></div>
+        <button class="copy" id="copy">Copy key</button>
+        <ol>
+          <li>Open the Airlock extension popup.</li>
+          <li>Click "Activate Pro" and paste this key.</li>
+          <li>Names, orgs and places start locking automatically.</li>
+        </ol>
+      </div>
+
+      <p class="foot">Lost your key? It is on your Gumroad receipt email. Trouble?
+        <a href="mailto:hello@made-by-ac.com?subject=Airlock%20Pro%20activation">Email our studio</a>.</p>
+    </div>
+
+    <script>
+      const keyEl = document.getElementById('key')
+      const goEl = document.getElementById('go')
+      const msgEl = document.getElementById('msg')
+      const resultEl = document.getElementById('result')
+      const tokenEl = document.getElementById('token')
+      const copyEl = document.getElementById('copy')
+
+      async function activate() {
+        const licenseKey = keyEl.value.trim()
+        if (!licenseKey) { msgEl.textContent = 'Paste your license key first.'; msgEl.className = 'msg err'; return }
+        goEl.disabled = true
+        msgEl.className = 'msg'
+        msgEl.textContent = 'Checking your purchase…'
+        try {
+          const r = await fetch('/api/activate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ licenseKey }),
+          })
+          const data = await r.json()
+          if (!r.ok) {
+            msgEl.textContent = data.error || 'Something went wrong. Try again.'
+            msgEl.className = 'msg err'
+            goEl.disabled = false
+            return
+          }
+          msgEl.textContent = ''
+          tokenEl.textContent = data.token
+          resultEl.classList.add('show')
+          goEl.disabled = false
+        } catch (_e) {
+          msgEl.textContent = 'Could not reach the server. Try again in a moment.'
+          msgEl.className = 'msg err'
+          goEl.disabled = false
+        }
+      }
+
+      goEl.addEventListener('click', activate)
+      keyEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') activate() })
+      copyEl.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(tokenEl.textContent)
+        copyEl.textContent = 'Copied ✓'
+        copyEl.classList.add('done')
+        setTimeout(() => { copyEl.textContent = 'Copy key'; copyEl.classList.remove('done') }, 1400)
+      })
+    </script>
+  </body>
+</html>

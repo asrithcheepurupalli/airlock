@@ -22,7 +22,7 @@ const LEAK = [
 // and PRO_URL for the Stripe checkout once payments are wired. Until then the
 // buttons collect interest instead of dead-ending.
 const STORE_URL = '' // e.g. https://chrome.google.com/webstore/detail/<id>
-const PRO_URL = '' // e.g. Stripe payment link
+const PRO_URL = 'https://madebyac.gumroad.com/l/airlock' // Gumroad checkout (opens as an overlay)
 const links = {
   free: STORE_URL || 'mailto:hello@made-by-ac.com?subject=Notify%20me%20when%20Airlock%20launches',
   pro: PRO_URL || 'mailto:hello@made-by-ac.com?subject=Airlock%20Pro%20waitlist',
@@ -216,7 +216,7 @@ export default function App() {
               <li>Curated packs for health, legal, code</li>
               <li>Replies restore your real values, locally</li>
             </ul>
-            <a className="tier-btn" href={links.pro}>{proLabel}</a>
+            <a className="tier-btn gumroad-button" href={links.pro}>{proLabel}</a>
           </div>
           <div className="tier">
             <h3>Practice</h3>
@@ -232,7 +232,8 @@ export default function App() {
           </div>
         </div>
         <p className="pricing-note">Pro activates with an offline license key. Even when you pay,
-          the extension still makes no network requests of its own. The proof survives the paywall.</p>
+          the extension still makes no network requests of its own. The proof survives the paywall.
+          {' '}<a href="/activate.html">Already bought? Activate your key</a>.</p>
       </section>
 
       <section className="cta" id="talk">

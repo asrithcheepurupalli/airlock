@@ -12,7 +12,7 @@
         "https://chat.openai.com/*",
         "https://claude.ai/*"
       ],
-      "js": ["redact.js", "content.js"],
+      "js": ["redact.js", "license-pubkey.js", "license.js", "content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
     }

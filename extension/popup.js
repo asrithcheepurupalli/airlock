@@ -14,7 +14,15 @@
   const proNote = document.getElementById('pronote')
   const proNoteText = document.getElementById('pronote-text')
   const proUpg = document.getElementById('proupg')
+  const actToggle = document.getElementById('actoggle')
+  const actPanel = document.getElementById('actpanel')
+  const licKey = document.getElementById('lickey')
+  const actBtn = document.getElementById('actbtn')
+  const actMsg = document.getElementById('actmsg')
+  const proBadge = document.getElementById('probadge')
+  const deact = document.getElementById('deact')
   let lastRedacted = ''
+  let proActive = false // flipped by a verified offline Pro license
 
   const TYPE_LABEL = {
     EMAIL: 'email', PHONE: 'phone', CARD: 'card', SSN: 'SSN', SECRET: 'secret',
@@ -88,16 +96,21 @@
 
   function run() {
     const terms = termsEl.value.split(',').map((t) => t.trim()).filter(Boolean)
-    const { redacted, spans } = redact(inEl.value, terms)
-    const pros = sniffProspects(inEl.value, spans)
+    // First pass: rules + terms. Then sniff names/orgs in the gaps. On Pro we feed
+    // those prospects back through as nerSpans so they become locked placeholders;
+    // on Free they stay surfaced as "exposed" to show exactly what Pro would catch.
+    const base = redact(inEl.value, terms)
+    const pros = sniffProspects(inEl.value, base.spans)
+    const { redacted, spans } = proActive ? redact(inEl.value, terms, pros) : base
+    const exposed = proActive ? [] : pros
     const hasText = !!inEl.value.trim()
     lastRedacted = hasText ? redacted : ''
-    renderChips(spans, pros)
-    renderOut(inEl.value, spans, pros, hasText)
-    setStatus(spans, pros, hasText)
+    renderChips(spans, exposed)
+    renderOut(inEl.value, spans, exposed, hasText)
+    setStatus(spans, exposed, hasText)
     copyBtn.disabled = !spans.length
-    if (hasText && pros.length) {
-      proNoteText.textContent = exposedLabel(pros)
+    if (hasText && exposed.length) {
+      proNoteText.textContent = exposedLabel(exposed)
       proNote.hidden = false
     } else {
       proNote.hidden = true
@@ -126,5 +139,74 @@
     }, 1200)
   })
 
-  run() // start clean and empty
+  // --- Pro licensing (offline) -------------------------------------------
+  const License = window.AirlockLicense
+
+  function reflectPro(state) {
+    proActive = !!(state && state.pro)
+    if (proActive) {
+      actToggle.hidden = true
+      actPanel.hidden = true
+      proBadge.hidden = false
+      proNote.hidden = true
+    } else {
+      actToggle.hidden = false
+      proBadge.hidden = true
+    }
+  }
+
+  async function refreshPro() {
+    if (!License) return
+    try {
+      reflectPro(await License.state())
+    } catch (_e) {
+      reflectPro({ pro: false })
+    }
+    run()
+  }
+
+  actToggle.addEventListener('click', () => {
+    actPanel.hidden = !actPanel.hidden
+    if (!actPanel.hidden) licKey.focus()
+  })
+
+  async function doActivate() {
+    const token = licKey.value.trim()
+    if (!token) { actMsg.textContent = 'Paste your Pro key first.'; actMsg.className = 'actmsg err'; return }
+    actBtn.disabled = true
+    actMsg.textContent = 'Verifying…'
+    actMsg.className = 'actmsg'
+    const payload = License ? await License.activate(token) : null
+    actBtn.disabled = false
+    if (!payload) {
+      actMsg.innerHTML = 'That key did not verify. <a id="getkey" href="#">Get your key</a>'
+      actMsg.className = 'actmsg err'
+      const gk = document.getElementById('getkey')
+      if (gk) gk.addEventListener('click', (e) => { e.preventDefault(); openActivatePage() })
+      return
+    }
+    licKey.value = ''
+    actMsg.textContent = 'Pro unlocked.'
+    actMsg.className = 'actmsg ok'
+    reflectPro({ pro: true, email: payload.e })
+    run()
+  }
+
+  actBtn.addEventListener('click', doActivate)
+  licKey.addEventListener('keydown', (e) => { if (e.key === 'Enter') doActivate() })
+
+  deact.addEventListener('click', async () => {
+    if (License) await License.deactivate()
+    actMsg.textContent = ''
+    reflectPro({ pro: false })
+    run()
+  })
+
+  function openActivatePage() {
+    const url = 'https://airlock.made-by-ac.com/activate.html'
+    if (chrome.tabs?.create) chrome.tabs.create({ url })
+    else window.open(url, '_blank')
+  }
+
+  refreshPro() // resolve Pro state, then render
 })()
