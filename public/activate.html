@@ -226,8 +226,14 @@
         ledeEl.hidden = true
         activateView.hidden = true
         releaseView.hidden = false
-        if (prefillKey && !extPresent) { showReleaseManual('Enter your license key to release the seat.'); rkeyEl.value = prefillKey }
-        else if (extPresent) window.postMessage({ __airlock: 'get-state' }, location.origin)
+        if (prefillKey) {
+          // 409 recovery: the seat is held by ANOTHER device, so release by key.
+          showReleaseManual('Release the seat your license is using elsewhere, then come back and activate.')
+          rkeyEl.value = prefillKey
+          return
+        }
+        // Popup "Remove": auto-release this device's own token if the extension answers.
+        if (extPresent) window.postMessage({ __airlock: 'get-state' }, location.origin)
         else setTimeout(() => { if (!bridgeToken) showReleaseManual('Enter your license key to release the seat.') }, 1000)
       }
 
