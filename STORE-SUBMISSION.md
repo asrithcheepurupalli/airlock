@@ -26,7 +26,7 @@ breaking that guarantee.
 **Permission justifications** (the console asks per item):
 - `storage`: "Saves the user's own sensitive-term list and their offline Pro license locally in the browser so they persist between sessions. Nothing is synced or transmitted."
 - `offscreen`: "Hosts the on-device name-detection model in a background offscreen document so detection runs locally without blocking the page. Created only when a Pro user triggers detection; the model and runtime are packaged in the extension and nothing is fetched at runtime."
-- Host access (content scripts on `chatgpt.com`, `chat.openai.com`, `claude.ai`): "The extension adds an in-page control to these AI chat sites so the user can replace sensitive values before sending. It reads and rewrites only the compose box, locally."
+- Host access (content scripts on `chatgpt.com`, `chat.openai.com`, `claude.ai`, `gemini.google.com`): "The extension adds an in-page control to these AI chat sites so the user can replace sensitive values before sending. It reads and rewrites only the compose box, locally."
 - Remote code: **No.** All code AND model weights are packaged in the extension. Nothing is fetched or eval'd from a remote source. The extension requests no network permission and makes no network requests of its own. The CSP allows `wasm-unsafe-eval` solely so the bundled ONNX runtime can execute the local model; no remote code is involved."
 
 **Data usage / privacy practices** (declare honestly, this is Airlock's edge):

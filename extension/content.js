@@ -62,6 +62,8 @@
   const BOX_SELECTORS = [
     '#prompt-textarea', // ChatGPT (a contenteditable div with this id)
     'div[contenteditable="true"][translate="no"]', // Claude
+    'rich-textarea .ql-editor[contenteditable="true"]', // Gemini (Quill editor)
+    '.ql-editor[contenteditable="true"]', // Gemini fallback
     'div.ProseMirror[contenteditable="true"]',
     'div[contenteditable="true"]',
     'textarea[data-testid="chat-input"]',
