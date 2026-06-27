@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 160 160">
+  <rect width="160" height="160" rx="34" fill="#0b0b0c"/>
+  <!-- a message; the sensitive words are caught and blocked out in brand red -->
+  <rect x="36" y="46" width="34" height="15" rx="7.5" fill="#f6f3ee" opacity="0.92"/>
+  <rect x="78" y="46" width="22" height="15" rx="7.5" fill="#f6f3ee" opacity="0.92"/>
+  <rect x="108" y="46" width="32" height="15" rx="7.5" fill="#c8102e"/>
+  <rect x="36" y="74" width="40" height="15" rx="7.5" fill="#c8102e"/>
+  <rect x="84" y="74" width="40" height="15" rx="7.5" fill="#f6f3ee" opacity="0.92"/>
+  <rect x="36" y="102" width="56" height="15" rx="7.5" fill="#f6f3ee" opacity="0.92"/>
+</svg>

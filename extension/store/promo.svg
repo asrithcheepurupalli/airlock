@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" font-family="Georgia, 'Times New Roman', serif">
+  <rect width="1280" height="800" fill="#f6f3ee"/>
+
+  <!-- brand: italic wordmark, upright red dot -->
+  <text x="80" y="96" font-size="34" font-weight="600" font-style="italic" fill="#0b0b0c">airlock<tspan font-style="normal" fill="#c8102e">.</tspan></text>
+  <text x="80" y="128" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#3a3a34">A <tspan font-family="Georgia, serif" font-style="italic" font-weight="600">made<tspan font-style="normal" fill="#c8102e">.</tspan></tspan> product</text>
+
+  <!-- headline -->
+  <text x="80" y="232" font-size="58" font-weight="500" fill="#0b0b0c">The AI you use should never</text>
+  <text x="80" y="300" font-size="58" font-weight="500" fill="#0b0b0c">see your client's name.</text>
+  <text x="80" y="356" font-family="Helvetica, Arial, sans-serif" font-size="21" fill="#3a3a34">Sensitive data is stripped on your device before it reaches ChatGPT or Claude.</text>
+
+  <!-- without card -->
+  <g>
+    <rect x="80" y="430" width="540" height="290" rx="18" fill="#fbfaf6" stroke="#ddd8cc" stroke-width="2"/>
+    <text x="112" y="478" font-family="Helvetica, Arial, sans-serif" font-size="14" letter-spacing="1.5" fill="#c8102e">WITHOUT AIRLOCK</text>
+    <text x="112" y="520" font-family="Menlo, monospace" font-size="18" fill="#0b0b0c">My client <tspan fill="#c8102e">Dana Reyes</tspan> at</text>
+    <text x="112" y="552" font-family="Menlo, monospace" font-size="18" fill="#c8102e">dana.reyes@acmehealth.com</text>
+    <text x="112" y="584" font-family="Menlo, monospace" font-size="18" fill="#0b0b0c">asked about patient <tspan fill="#c8102e">John Carver</tspan>.</text>
+    <text x="112" y="664" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#6b6b63">Everything leaves your device, in the clear.</text>
+  </g>
+
+  <!-- with card -->
+  <g>
+    <rect x="660" y="430" width="540" height="290" rx="18" fill="#f6f8f5" stroke="#bcd6bf" stroke-width="2"/>
+    <text x="692" y="478" font-family="Helvetica, Arial, sans-serif" font-size="14" letter-spacing="1.5" fill="#15803d">WITH AIRLOCK</text>
+    <text x="692" y="520" font-family="Menlo, monospace" font-size="18" fill="#0b0b0c">My client <tspan fill="#15803d">[NAME_1]</tspan> at</text>
+    <text x="692" y="552" font-family="Menlo, monospace" font-size="18" fill="#15803d">[EMAIL_1]</text>
+    <text x="692" y="584" font-family="Menlo, monospace" font-size="18" fill="#0b0b0c">asked about patient <tspan fill="#15803d">[NAME_2]</tspan>.</text>
+    <text x="692" y="664" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#6b6b63">The model sees the shape, never the identity.</text>
+  </g>
+</svg>

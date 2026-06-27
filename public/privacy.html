@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Airlock, privacy policy</title>
+    <meta name="description" content="Airlock processes everything on your device. It collects nothing, sends nothing, and stores nothing on any server." />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,600&display=swap" rel="stylesheet" />
+    <style>
+      :root { --paper:#f6f3ee; --ink:#0b0b0c; --grey:#7c7770; --line:#ddd5c8; --red:#c8102e; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--paper); color: var(--ink);
+        font: 16px/1.65 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased; }
+      .wrap { max-width: 760px; margin: 0 auto; padding: 56px 24px 96px; }
+      .brand { font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 600;
+        font-size: 22px; text-decoration: none; color: var(--ink); }
+      .brand .dot { font-style: normal; color: var(--red); }
+      h1 { font-family: "Fraunces", Georgia, serif; font-weight: 500; font-size: 40px;
+        letter-spacing: -0.02em; margin: 40px 0 6px; }
+      .eff { color: var(--grey); font-size: 14px; margin: 0 0 32px; }
+      h2 { font-family: "Fraunces", Georgia, serif; font-weight: 500; font-size: 22px; margin: 36px 0 8px; }
+      p, li { color: #2a2a27; }
+      a { color: var(--red); }
+      .lead { font-size: 18px; }
+      .tldr { border: 1px solid var(--line); border-radius: 14px; background: #fbfaf6;
+        padding: 20px 22px; margin: 28px 0; }
+      .tldr strong { display:block; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+        color: var(--grey); margin-bottom: 8px; }
+      ul { padding-left: 20px; }
+      footer { margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line);
+        color: var(--grey); font-size: 14px; display:flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="brand" href="/">airlock<span class="dot">.</span></a>
+
+      <h1>Privacy policy</h1>
+      <p class="eff">Effective 27 June 2026</p>
+
+      <p class="lead">Airlock is built so that this page can be short. It processes everything
+        on your device. It collects nothing, sends nothing, and stores nothing on any server.</p>
+
+      <div class="tldr">
+        <strong>The whole thing in one line</strong>
+        Airlock has no servers, no analytics, and no network permission. Your data never reaches us,
+        because there is no "us" for it to reach.
+      </div>
+
+      <h2>What Airlock does</h2>
+      <p>Airlock detects sensitive content in your prompt (emails, cards, secrets, identifiers, and
+        names, organisations and places via a small model that runs in your browser), replaces each
+        value with a placeholder, and lets you send only the placeholder version to an AI assistant.
+        When the reply returns, Airlock restores your real values locally so it reads naturally. The
+        key map that links placeholders to real values lives only in your browser and is never
+        transmitted.</p>
+
+      <h2>What we collect</h2>
+      <p>Nothing. Airlock has no accounts, no analytics, no telemetry, and no tracking. It makes no
+        network requests of its own. You can confirm this: open your browser's network tab and watch
+        Airlock stay silent.</p>
+
+      <h2>Permissions, and why</h2>
+      <ul>
+        <li><strong>storage</strong> saves your settings and your own sensitive-term list locally in
+          your browser. It is never synced to us.</li>
+        <li><strong>offscreen</strong> runs the on-device name-detection model in a background page on
+          your machine.</li>
+        <li>Airlock requests <strong>no network or host permission of its own</strong>. It only adds a
+          redaction layer to the AI sites you already use.</li>
+      </ul>
+
+      <h2>Your data and third parties</h2>
+      <p>We do not sell, share, or transmit your data, because we never receive it. Airlock has no
+        third-party services. When <em>you</em> choose to send a redacted prompt to ChatGPT or Claude,
+        that text goes to those providers under their own policies. Airlock's entire job is to make
+        sure the sensitive parts are replaced with placeholders before that happens.</p>
+
+      <h2>Children</h2>
+      <p>Airlock is a professional tool and is not directed to children under 13.</p>
+
+      <h2>Changes</h2>
+      <p>If this policy changes, we will update the date above and post the new version here.</p>
+
+      <h2>Contact</h2>
+      <p>Questions about privacy: <a href="mailto:hello@made-by-ac.com">hello@made-by-ac.com</a></p>
+
+      <footer>
+        <span>Airlock is a made. product.</span>
+        <a href="/">Back to airlock.</a>
+      </footer>
+    </div>
+  </body>
+</html>

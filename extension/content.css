@@ -1,0 +1,37 @@
+#airlock-pill {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px 7px 12px;
+  background: #0b0b0c;
+  color: #f6f3ee;
+  border-radius: 999px;
+  font: 500 13px/1 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+  user-select: none;
+}
+#airlock-pill .airlock-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #57606a;
+}
+#airlock-pill.airlock-armed .airlock-dot { background: #f59e0b; }
+#airlock-pill.airlock-warming .airlock-dot { background: #f59e0b; animation: airlock-pulse 1s ease-in-out infinite; }
+@keyframes airlock-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+#airlock-pill.airlock-flash { outline: 2px solid #15803d; }
+#airlock-pill .airlock-count { letter-spacing: -0.01em; }
+#airlock-pill .airlock-btn {
+  border: none;
+  background: #2a2a25;
+  color: #f4f1ea;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: 600 12.5px ui-sans-serif, sans-serif;
+  cursor: pointer;
+}
+#airlock-pill.airlock-armed .airlock-btn { background: #15803d; }
