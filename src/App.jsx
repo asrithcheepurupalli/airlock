@@ -78,6 +78,7 @@ export default function App() {
         <div className="nav-right">
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
+          <a href="/activate.html">Activate</a>
           <a className="nav-cta" href="#pricing">Get Airlock</a>
         </div>
       </nav>

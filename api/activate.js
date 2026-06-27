@@ -74,17 +74,28 @@ export default async function handler(req, res) {
     return res.status(402).json({ error: 'This subscription is no longer active.' })
   }
 
+  // The payload must be DETERMINISTIC so the same Gumroad key always mints the
+  // exact same token (Ed25519 signs deterministically). So derive the issued time
+  // from the purchase itself — never Date.now(), which would change every call.
   const token = mintLicense(
     {
       e: p.email || '',
       p: 'airlock-pro',
       s: p.sale_id || p.id || licenseKey,
-      i: Math.floor(Date.now() / 1000),
+      i: purchaseSeconds(p),
     },
     privKey
   )
 
   return res.status(200).json({ token, email: p.email || '' })
+}
+
+// Stable unix seconds for the purchase, from whichever timestamp Gumroad returns.
+// Falls back to 0 (still deterministic) if none is present.
+function purchaseSeconds(p) {
+  const t = p.sale_timestamp || p.created_at
+  const ms = t ? Date.parse(t) : NaN
+  return Number.isNaN(ms) ? 0 : Math.floor(ms / 1000)
 }
 
 function safeJson(s) {
