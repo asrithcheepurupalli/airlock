@@ -19,6 +19,15 @@
       "js": ["redact.js", "license-pubkey.js", "license.js", "content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://airlock.made-by-ac.com/activate*",
+        "http://localhost:5173/activate*",
+        "http://localhost:4173/activate*"
+      ],
+      "js": ["license-pubkey.js", "license.js", "activate-bridge.js"],
+      "run_at": "document_idle"
     }
   ],
   "action": {

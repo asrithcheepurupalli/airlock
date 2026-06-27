@@ -49,6 +49,16 @@
         color: var(--ink); }
       .copy { margin-top: 12px; background: var(--ok); }
       .copy.done { background: var(--ink); }
+      .oneclick { margin: 0 0 4px; background: var(--ok); }
+      .oneclick[hidden] { display: none; }
+      .oneclick:disabled { opacity: 0.6; }
+      .activated { color: var(--ok); font-weight: 600; font-size: 14px; margin: 0; }
+      .activated[hidden] { display: none; }
+      .manual[hidden] { display: none; }
+      .manual-lede { margin-top: 6px; }
+      .or { color: var(--grey); font-size: 12px; text-align: center; margin: 14px 0 10px;
+        text-transform: uppercase; letter-spacing: 0.08em; }
+      .or[hidden] { display: none; }
       ol { color: var(--grey); font-size: 13px; padding-left: 20px; margin: 16px 0 0; }
       ol li { margin-bottom: 4px; }
       .foot { margin-top: 28px; color: var(--grey); font-size: 12px; }
@@ -70,14 +80,23 @@
 
       <div class="result" id="result">
         <h2>You are Pro.</h2>
-        <p>Copy this key and paste it into the extension popup, under "Activate Pro".</p>
-        <div class="token" id="token"></div>
-        <button class="copy" id="copy">Copy key</button>
-        <ol>
-          <li>Open the Airlock extension popup.</li>
-          <li>Click "Activate Pro" and paste this key.</li>
-          <li>Names, orgs and places start locking automatically.</li>
-        </ol>
+
+        <!-- one-click: shown only when the Airlock extension is detected on this page -->
+        <button class="oneclick" id="oneclick" hidden>Activate in Airlock</button>
+        <p class="activated" id="activated" hidden>Activated. Pro is on. Open the Airlock popup to see it.</p>
+        <p class="or" id="or" hidden>or activate manually</p>
+
+        <!-- manual fallback: copy the key into the popup -->
+        <div class="manual" id="manual">
+          <p class="manual-lede">Copy this key and paste it into the extension popup, under "Activate Pro".</p>
+          <div class="token" id="token"></div>
+          <button class="copy" id="copy">Copy key</button>
+          <ol>
+            <li>Open the Airlock extension popup.</li>
+            <li>Click "Activate Pro" and paste this key.</li>
+            <li>Names, orgs and places start locking automatically.</li>
+          </ol>
+        </div>
       </div>
 
       <p class="foot">Lost your key? It is on your Gumroad receipt email. Trouble?
@@ -91,6 +110,48 @@
       const resultEl = document.getElementById('result')
       const tokenEl = document.getElementById('token')
       const copyEl = document.getElementById('copy')
+      const oneClickEl = document.getElementById('oneclick')
+      const activatedEl = document.getElementById('activated')
+      const orEl = document.getElementById('or')
+      const manualEl = document.getElementById('manual')
+
+      // The extension injects a bridge that announces itself with __airlock:'present'.
+      // Until we hear it, we assume manual paste; if we hear it, we offer one click.
+      let extPresent = false
+      let currentToken = ''
+      window.addEventListener('message', (e) => {
+        if (e.source !== window) return
+        const d = e.data
+        if (!d || typeof d !== 'object') return
+        if (d.__airlock === 'present') {
+          extPresent = true
+          if (currentToken) revealOneClick()
+        } else if (d.__airlock === 'activated') {
+          if (d.ok) {
+            oneClickEl.hidden = true
+            orEl.hidden = true
+            manualEl.hidden = true
+            activatedEl.hidden = false
+          } else {
+            oneClickEl.disabled = false
+            oneClickEl.textContent = 'Activate in Airlock'
+            msgEl.textContent = 'The extension could not verify that key. Use the manual steps below.'
+            msgEl.className = 'msg err'
+          }
+        }
+      })
+
+      function revealOneClick() {
+        oneClickEl.hidden = false
+        orEl.hidden = false // keep manual visible underneath as a fallback
+      }
+
+      oneClickEl.addEventListener('click', () => {
+        if (!currentToken) return
+        oneClickEl.disabled = true
+        oneClickEl.textContent = 'Activating…'
+        window.postMessage({ __airlock: 'activate', token: currentToken }, location.origin)
+      })
 
       async function activate() {
         const licenseKey = keyEl.value.trim()
@@ -112,8 +173,10 @@
             return
           }
           msgEl.textContent = ''
+          currentToken = data.token
           tokenEl.textContent = data.token
           resultEl.classList.add('show')
+          if (extPresent) revealOneClick()
           goEl.disabled = false
         } catch (_e) {
           msgEl.textContent = 'Could not reach the server. Try again in a moment.'
