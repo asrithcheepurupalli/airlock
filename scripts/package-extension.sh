@@ -17,7 +17,7 @@ OUT="airlock-extension-v${VERSION}.zip"
 
 # preflight: everything the wired build needs to run
 for f in extension/manifest.json extension/redact.js extension/license-pubkey.js \
-         extension/license.js extension/content.js extension/content.css \
+         extension/license.js extension/content.js extension/inject-main.js extension/content.css \
          extension/popup.html extension/popup.js extension/background.js \
          extension/activate-bridge.js extension/offscreen/offscreen.html; do
   [ -f "$f" ] || { echo "MISSING: $f (run 'npm run build:ext'?)"; exit 1; }

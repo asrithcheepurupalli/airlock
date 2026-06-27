@@ -74,10 +74,10 @@
   // --- find the compose box across the major chat UIs ---------------------
   const BOX_SELECTORS = [
     '#prompt-textarea', // ChatGPT (a contenteditable div with this id)
-    'div[contenteditable="true"][translate="no"]', // Claude
     'rich-textarea .ql-editor[contenteditable="true"]', // Gemini (Quill editor)
     '.ql-editor[contenteditable="true"]', // Gemini fallback
-    'div.ProseMirror[contenteditable="true"]',
+    'div.ProseMirror[contenteditable="true"]', // ChatGPT/Claude (tiptap = ProseMirror)
+    'div[contenteditable="true"][translate="no"]', // Claude fallback
     'div[contenteditable="true"]',
     'textarea[data-testid="chat-input"]',
     'textarea[placeholder]',
@@ -113,44 +113,47 @@
     return ok
   }
 
-  // Put the redacted draft into the compose box. Returns 'inplace' (done) or
-  // 'paste' (user must press ⌘V) so the pill can tell the user what to do.
-  //  - plain textarea: write it directly (sticks, React-safe).
-  //  - rich editor (tiptap/ProseMirror on ChatGPT+Claude, Quill on Gemini):
-  //    selectAll + execCommand insertText goes through the editor's own input
-  //    pipeline, so all three keep it. Verified on Claude and Gemini's real boxes.
-  //  - if that ever fails to land, fall back to clipboard + pre-select so one ⌘V
-  //    overwrites (the path ChatGPT shipped on).
+  // Put the redacted draft into the compose box. Resolves to 'inplace' (done) or
+  // 'failed' (couldn't replace here) so the pill can tell the user what happened.
+  //  - plain textarea: write it directly (sticks, React-safe), in our world.
+  //  - rich editor (tiptap/ProseMirror on ChatGPT+Claude, Quill on Gemini): these
+  //    REVERT edits made from the content script's isolated world, so we tag the
+  //    box and hand the replace to inject-main.js, which runs in the page's own
+  //    world where the editor honors execCommand. A redaction always introduces a
+  //    placeholder like [EMAIL_1]; the helper confirms one landed before we trust it.
+  let fillSeq = 0
   function applyRedaction(el, text) {
     if (el.tagName === 'TEXTAREA') {
       const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set
       setter.call(el, text)
       el.dispatchEvent(new Event('input', { bubbles: true }))
-      return 'inplace'
+      return Promise.resolve('inplace')
     }
-    // a redaction always introduces at least one placeholder like [EMAIL_1];
-    // its presence in the box afterward proves the replace actually landed.
     const marker = (text.match(/\[[A-Z][A-Z_]*_\d+\]/) || [])[0]
-    try {
-      el.focus()
-      // selectAll + delete empties the box first, THEN insertText. Replacing a
-      // selection directly with insertText appends on ChatGPT/Gemini (only Claude
-      // replaces); deleting first gives a clean replace on all three (verified).
-      document.execCommand('selectAll', false, null)
-      document.execCommand('delete', false, null)
-      document.execCommand('insertText', false, text)
-      if (marker && boxText(el).includes(marker)) return 'inplace'
-    } catch (_e) {
-      /* fall through to the clipboard path */
-    }
-    copyText(text)
+    const id = ++fillSeq
+    el.setAttribute('data-airlock-fill', '1')
     el.focus()
-    const sel = window.getSelection()
-    sel.removeAllRanges()
-    const range = document.createRange()
-    range.selectNodeContents(el)
-    sel.addRange(range)
-    return 'paste'
+    return new Promise((resolve) => {
+      let settled = false
+      const finish = (how) => {
+        if (settled) return
+        settled = true
+        window.removeEventListener('message', onMsg)
+        el.removeAttribute('data-airlock-fill')
+        resolve(how)
+      }
+      const onMsg = (e) => {
+        if (e.source !== window || !e.data || e.data.__airlock !== 'filled' || e.data.id !== id) return
+        finish(e.data.ok ? 'inplace' : 'failed')
+      }
+      window.addEventListener('message', onMsg)
+      window.postMessage({ __airlock: 'fill', id, text }, '*')
+      // helper missing/slow: read the box directly, else report honest failure
+      setTimeout(() => {
+        if (settled) return
+        finish(marker && boxText(el).includes(marker) ? 'inplace' : 'failed')
+      }, 700)
+    })
   }
 
   // --- the floating Airlock pill ------------------------------------------
@@ -238,7 +241,7 @@
     }
   }
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     if (pill.dataset.mode === 'pro') { window.open(PRICING_URL, '_blank'); return }
     const box = findBox()
     if (!box) return
@@ -256,14 +259,19 @@
       setTimeout(() => pill.classList.remove('airlock-flash'), 600)
       return
     }
-    activeMap = Object.assign(activeMap, map) // remember so we can restore the reply
-    const how = applyRedaction(box, redacted)
+    holdUntil = Date.now() + 4000 // hold status through the async replace
+    const how = await applyRedaction(box, redacted)
     holdUntil = Date.now() + 4000
     pill.classList.remove('airlock-armed')
-    // keep the upsell visible: free locked the rules, but names may still be exposed
-    const pros = proActive ? [] : sniffProspects(text, spans)
-    updatePro(pros, 1)
-    countEl.textContent = how === 'inplace' ? 'Locked ✓' : 'Locked, press ⌘V'
+    if (how === 'inplace') {
+      activeMap = Object.assign(activeMap, map) // remember so we can restore the reply
+      // keep the upsell visible: free locked the rules, but names may still be exposed
+      const pros = proActive ? [] : sniffProspects(text, spans)
+      updatePro(pros, 1)
+      countEl.textContent = 'Locked ✓'
+    } else {
+      countEl.textContent = 'Could not lock here, use the popup'
+    }
     pill.classList.add('airlock-flash')
     setTimeout(() => pill.classList.remove('airlock-flash'), 600)
   })

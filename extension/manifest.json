@@ -23,6 +23,17 @@
     },
     {
       "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*"
+      ],
+      "js": ["inject-main.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
         "https://airlock.made-by-ac.com/activate*",
         "http://localhost:5173/activate*",
         "http://localhost:4173/activate*"
