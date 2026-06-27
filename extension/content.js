@@ -118,8 +118,6 @@
   //  - rich editor (ChatGPT/Claude): forcing text in gets reverted by the
   //    framework, so we copy it and pre-select the draft. One ⌘V overwrites it.
   // Returns 'inplace' or 'paste' so the pill can tell the user what to do.
-  const norm = (s) => (s || '').replace(/\s+/g, ' ').trim()
-
   function applyRedaction(el, text) {
     if (el.tagName === 'TEXTAREA') {
       const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set
@@ -127,32 +125,13 @@
       el.dispatchEvent(new Event('input', { bubbles: true }))
       return 'inplace'
     }
-    // Rich editor (ChatGPT / Claude ProseMirror, Gemini Quill). Replace the whole
-    // draft in one editing op: select all, then insertText. That fires the
-    // beforeinput/input events these editors expect, so they treat it as real
-    // typing and keep it, unlike a forced DOM write (which they revert). We verify
-    // the text actually changed before trusting it.
-    el.focus()
-    try {
-      document.execCommand('selectAll', false, null)
-      if (document.execCommand('insertText', false, text) && norm(boxText(el)) === norm(text)) {
-        return 'inplace'
-      }
-    } catch (_e) {
-      /* fall through to the clipboard path */
-    }
-    // Fallback: put it on the clipboard and pre-select so one paste overwrites.
     copyText(text)
     el.focus()
-    let selected = false
-    try { selected = document.execCommand('selectAll', false, null) } catch (_e) {}
     const sel = window.getSelection()
-    if (!selected || sel.isCollapsed) {
-      sel.removeAllRanges()
-      const range = document.createRange()
-      range.selectNodeContents(el)
-      sel.addRange(range)
-    }
+    sel.removeAllRanges()
+    const range = document.createRange()
+    range.selectNodeContents(el)
+    sel.addRange(range)
     return 'paste'
   }
 
