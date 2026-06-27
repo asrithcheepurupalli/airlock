@@ -1,37 +1,82 @@
+/* The floating Airlock control. made. palette (ink / paper / brand red),
+   the red period doubles as the brand mark and the warming cue, and the
+   Redact button turns brand-red when there is something to act on. */
 #airlock-pill {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 22px;
+  right: 22px;
   z-index: 2147483647;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 8px 7px 12px;
+  gap: 10px;
+  padding: 7px 8px 7px 14px;
   background: #0b0b0c;
   color: #f6f3ee;
   border-radius: 999px;
   font: 500 13px/1 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(246, 243, 238, 0.06);
   user-select: none;
+  animation: airlock-enter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
-#airlock-pill .airlock-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #57606a;
+#airlock-pill:hover {
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(246, 243, 238, 0.1);
+  transform: translateY(-1px);
 }
-#airlock-pill.airlock-armed .airlock-dot { background: #f59e0b; }
-#airlock-pill.airlock-warming .airlock-dot { background: #f59e0b; animation: airlock-pulse 1s ease-in-out infinite; }
+@keyframes airlock-enter {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+/* brand mark italic serif with an upright red period (the made. pattern) */
+#airlock-pill .airlock-mark {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+#airlock-pill .airlock-pt { font-style: normal; color: #c8102e; }
+#airlock-pill.airlock-warming .airlock-pt { animation: airlock-pulse 1s ease-in-out infinite; }
 @keyframes airlock-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
-#airlock-pill.airlock-flash { outline: 2px solid #15803d; }
-#airlock-pill .airlock-count { letter-spacing: -0.01em; }
+
+#airlock-pill .airlock-div { width: 1px; height: 16px; background: rgba(246, 243, 238, 0.16); }
+
+#airlock-pill .airlock-count {
+  letter-spacing: -0.01em;
+  color: rgba(246, 243, 238, 0.66);
+  white-space: nowrap;
+  transition: color 0.25s ease;
+}
+#airlock-pill.airlock-armed .airlock-count { color: #f6f3ee; }
+#airlock-pill.airlock-warming .airlock-count { color: #f0b34a; }
+
+/* Redact button turns brand-red when there is something to act on */
 #airlock-pill .airlock-btn {
   border: none;
   background: #2a2a25;
-  color: #f4f1ea;
+  color: #f6f3ee;
   border-radius: 999px;
-  padding: 6px 12px;
+  padding: 7px 14px;
   font: 600 12.5px ui-sans-serif, sans-serif;
   cursor: pointer;
+  transition: background 0.2s ease, transform 0.12s ease, box-shadow 0.2s ease;
 }
-#airlock-pill.airlock-armed .airlock-btn { background: #15803d; }
+#airlock-pill .airlock-btn:hover { background: #3a3a33; }
+#airlock-pill .airlock-btn:active { transform: scale(0.94); }
+#airlock-pill.airlock-armed .airlock-btn {
+  background: #c8102e;
+  box-shadow: 0 4px 14px rgba(200, 16, 46, 0.42);
+}
+#airlock-pill.airlock-armed .airlock-btn:hover { background: #a90e27; }
+
+/* success ring after a redact */
+#airlock-pill.airlock-flash { animation: airlock-flash-anim 0.65s ease; }
+@keyframes airlock-flash-anim {
+  0% { box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.55), 0 10px 34px rgba(0, 0, 0, 0.3); }
+  100% { box-shadow: 0 0 0 16px rgba(21, 128, 61, 0), 0 10px 34px rgba(0, 0, 0, 0.3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #airlock-pill, #airlock-pill * { animation: none !important; }
+}

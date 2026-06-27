@@ -1,13 +1,13 @@
-// content.js — injects Airlock into the AI chat page.
+// content.js injects Airlock into the AI chat page.
 //
 // What it does, all locally:
 //   1) watches your draft and shows a live count of sensitive spans
 //   2) one click redacts the draft IN PLACE (and remembers the real values)
 //   3) when the assistant replies, restores your real values in the displayed
-//      text so the answer reads naturally — the model only ever saw placeholders
+//      text so the answer reads naturally the model only ever saw placeholders
 //
 // It makes NO network requests of its own. The only traffic is your browser
-// talking to ChatGPT/Claude as it already does — now with the sensitive bits
+// talking to ChatGPT/Claude as it already does now with the sensitive bits
 // swapped for placeholders before they leave the box.
 
 ;(function () {
@@ -105,7 +105,9 @@
   const pill = document.createElement('div')
   pill.id = 'airlock-pill'
   pill.innerHTML =
-    `<span class="airlock-dot"></span><span class="airlock-count">Airlock</span>` +
+    `<span class="airlock-mark">airlock<span class="airlock-pt">.</span></span>` +
+    `<span class="airlock-div"></span>` +
+    `<span class="airlock-count">starting…</span>` +
     `<button class="airlock-btn" type="button">Redact</button>`
   document.documentElement.appendChild(pill)
   const countEl = pill.querySelector('.airlock-count')
@@ -118,7 +120,7 @@
     const box = findBox()
     if (!box) {
       pill.classList.remove('airlock-armed')
-      countEl.textContent = 'Airlock'
+      countEl.textContent = nerReady ? 'ready' : 'starting…'
       return
     }
     const text = boxText(box)

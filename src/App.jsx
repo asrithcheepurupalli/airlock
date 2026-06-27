@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import Lenis from 'lenis'
 import Demo from './Demo.jsx'
 import Stages from './Stages.jsx'
 
@@ -17,6 +19,30 @@ const LEAK = [
 ]
 
 export default function App() {
+  useEffect(() => {
+    const lenis = new Lenis({ duration: 0.9, smoothWheel: true })
+    window.__airlockLenis = lenis
+    let id
+    const raf = (t) => { lenis.raf(t); id = requestAnimationFrame(raf) }
+    id = requestAnimationFrame(raf)
+    // smooth in-page anchor jumps
+    const onClick = (e) => {
+      const a = e.target.closest('a[href^="#"]')
+      if (!a) return
+      const target = document.querySelector(a.getAttribute('href'))
+      if (!target) return
+      e.preventDefault()
+      lenis.scrollTo(target, { offset: -10 })
+    }
+    document.addEventListener('click', onClick)
+    return () => {
+      cancelAnimationFrame(id)
+      document.removeEventListener('click', onClick)
+      lenis.destroy()
+      delete window.__airlockLenis
+    }
+  }, [])
+
   return (
     <div className="page">
       <nav className="nav">

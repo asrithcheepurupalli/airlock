@@ -1,4 +1,4 @@
-// popup.js — the guaranteed-visible surface. Works regardless of any site's DOM.
+// popup.js the guaranteed-visible surface. Works regardless of any site's DOM.
 ;(function () {
   const { redact } = window.AirlockEngine
   const inEl = document.getElementById('in')
@@ -18,8 +18,10 @@
     const terms = termsEl.value.split(',').map((t) => t.trim()).filter(Boolean)
     const { redacted, spans } = redact(inEl.value, terms)
     lastRedacted = redacted
-    outEl.textContent = redacted
+    outEl.textContent = inEl.value.trim() ? redacted : ''
     countEl.textContent = `${spans.length} found`
+    countEl.classList.toggle('hit', spans.length > 0)
+    copyBtn.disabled = !spans.length
   }
 
   inEl.addEventListener('input', run)
@@ -28,12 +30,15 @@
     run()
   })
   copyBtn.addEventListener('click', async () => {
+    if (!lastRedacted) return
     await navigator.clipboard.writeText(lastRedacted)
     copyBtn.textContent = 'Copied'
-    setTimeout(() => (copyBtn.textContent = 'Copy redacted'), 1200)
+    copyBtn.classList.add('done')
+    setTimeout(() => {
+      copyBtn.textContent = 'Copy redacted'
+      copyBtn.classList.remove('done')
+    }, 1200)
   })
 
-  inEl.value =
-    'Email Dana Reyes at dana.reyes@acmehealth.com about the Acme Health Systems invoice. Stripe key sk-live-4eC39HqLyjWDarjtT1zdp7dcabc123.'
-  run()
+  run() // start clean and empty
 })()
