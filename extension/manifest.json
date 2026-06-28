@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Airlock, privacy firewall for AI",
   "version": "0.1.0",
-  "description": "Strips emails, secrets, cards and your sensitive terms out of your prompt on-device before it reaches ChatGPT, Claude or Gemini, then restores them in the answer.",
+  "description": "Redact emails, secrets and client data on-device before your prompt reaches ChatGPT, Claude or Gemini, then restore them.",
   "permissions": ["storage", "offscreen"],
   "background": { "service_worker": "background.js" },
   "content_security_policy": {
