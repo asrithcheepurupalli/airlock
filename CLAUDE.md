@@ -5,8 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 Airlock is a privacy firewall for AI: it redacts sensitive data **on-device** before a prompt
-reaches ChatGPT/Claude, then rehydrates the model's answer locally. It is **three deployables in
-one repo**:
+reaches ChatGPT/Claude/Gemini, then rehydrates the model's answer locally. It is **three deployables
+in one repo**:
 
 1. **Landing SPA** (`src/`, `index.html`) — Vite/React 19 marketing site, deploys to Vercel.
 2. **MV3 browser extension** (`extension/`, built from `extension-src/`) — the actual product.
@@ -56,6 +56,24 @@ once.
   by `vite.ext.config.js` into `extension/offscreen/`), kept alive by the `background.js` service
   worker. The offscreen doc is created **lazily, only when a Pro user triggers detection**, so free
   users never load the weights.
+
+## In-page replacement: the MAIN-world helper (do not "simplify" this)
+
+The in-page redaction touches two JS worlds, and conflating them WILL silently break ChatGPT and
+Gemini (Claude is more forgiving, which makes the bug look site-specific):
+
+- `extension/content.js` runs in the **isolated world**. It finds the compose box, computes the
+  redaction, and drives the pill UI — but it **cannot replace the text itself**. ProseMirror
+  (ChatGPT, Claude/tiptap) and Quill (Gemini) **revert edits made from the isolated world**.
+- `extension/inject-main.js` is a content script declared with **`"world": "MAIN"`** (page context).
+  The actual replace happens here, where the editor honors `execCommand`. content.js tags the box
+  with `[data-airlock-fill]`, `postMessage`s `{__airlock:'fill', id, text}`, and the helper replies
+  `{__airlock:'filled', id, ok}`.
+- The replace sequence is **`selectAll → delete → insertText`**. The `delete` is required: replacing
+  a selection directly with `insertText` **appends** on ChatGPT/Gemini (only Claude replaces).
+- Success is confirmed by a redaction placeholder (`[EMAIL_1]`) actually appearing in the box; on
+  failure the pill says **"Could not lock here, use the popup"** (never a false "Locked").
+- `applyRedaction` is therefore **async** (awaits the helper ack with a timeout). Don't make it sync.
 
 ## Free vs Pro, and the "no network" invariant
 
