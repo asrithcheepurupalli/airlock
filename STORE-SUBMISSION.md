@@ -40,11 +40,13 @@ breaking that guarantee.
 - Support email: `hello@made-by-ac.com`
 - Business/contact address: a valid mailing address (a business or mailing address is fine; it does not have to be a home address).
 
-## Store assets (in `extension/store/`)
+## Store assets (in `extension/store/`, regenerate with `_src/render.sh`)
 - [ ] Icon: `extension/icons/icon128.png` (the redacted-word mark)
-- [ ] Screenshot 1280x800: `extension/store/screenshot-1280x800.png`
+- [ ] Screenshots 1280x800 (upload all three in order):
+      `screenshot-1-1280x800.png` (in-page lock), `screenshot-2-1280x800.png`
+      (before/after), `screenshot-3-1280x800.png` (no-network trust)
 - [ ] Small promo tile 440x280: `extension/store/marquee-tile.png`
-- [ ] Recommended: replace the mockup screenshot with a real in-product capture (popup + in-page pill)
+- Optional later: swap shot 1 for a real screen capture of the live pill mid-redaction
 
 ## Category & details
 - Category: **Productivity > Tools** (horizontal privacy utility; not dev-only, not a comms client)

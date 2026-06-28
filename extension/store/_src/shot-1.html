@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+  :root {
+    --ink: #0b0b0c; --paper: #f4efe7; --card: #ffffff; --red: #c8102e;
+    --gold: #bd9b4e; --line: rgba(11,11,12,0.10); --muted: #6b6860;
+  }
+  body {
+    width: 1280px; height: 800px; background:
+      radial-gradient(1100px 520px at 78% -10%, #efe7da 0%, rgba(239,231,218,0) 60%),
+      var(--paper);
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink); position: relative;
+    padding: 70px 76px;
+  }
+  .mark { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 600; }
+  .mark .dot { font-style: normal; color: var(--red); }
+  .eyebrow { font-size: 17px; letter-spacing: 0.02em; color: var(--muted); margin-bottom: 26px; }
+  .eyebrow .mark { font-size: 18px; color: var(--ink); }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif; font-weight: 600;
+    font-size: 56px; line-height: 1.04; letter-spacing: -0.015em; max-width: 18ch;
+  }
+  h1 .red { color: var(--red); }
+  .sub { font-size: 20.5px; line-height: 1.5; color: #3a3a34; max-width: 60ch; margin-top: 22px; }
+
+  /* chat card */
+  .card {
+    position: absolute; left: 76px; right: 76px; bottom: 64px; height: 372px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    box-shadow: 0 30px 70px rgba(11,11,12,0.13); padding: 30px 34px 26px;
+    display: flex; flex-direction: column;
+  }
+  .card-head { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 14.5px; margin-bottom: 20px; }
+  .card-head .dot3 { display: inline-flex; gap: 6px; }
+  .card-head .dot3 i { width: 11px; height: 11px; border-radius: 50%; background: #dcd6cc; }
+  .prompt { font-size: 24px; line-height: 1.62; color: #1a1a18; flex: 1; }
+  .ph {
+    color: var(--red); font-weight: 600; background: rgba(200,16,46,0.08);
+    border: 1px solid rgba(200,16,46,0.22); border-radius: 7px; padding: 1px 8px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 20px;
+  }
+  .compose {
+    margin-top: 18px; border-top: 1px solid var(--line); padding-top: 16px;
+    display: flex; align-items: center; justify-content: space-between; color: #9a958b; font-size: 16px;
+  }
+  .send { width: 38px; height: 38px; border-radius: 50%; background: var(--ink); display: grid; place-items: center; }
+  .send svg { width: 18px; height: 18px; }
+
+  /* the real airlock pill */
+  .pill {
+    position: absolute; right: 104px; bottom: 96px; z-index: 5;
+    display: inline-flex; align-items: center; gap: 11px;
+    background: #0b0b0c; color: #f6f3ee; border-radius: 999px;
+    padding: 9px 10px 9px 17px; font: 500 15px/1 -apple-system, sans-serif;
+    box-shadow: 0 18px 44px rgba(0,0,0,0.32), inset 0 0 0 1px rgba(246,243,238,0.07);
+  }
+  .pill .pmark { font-family: Georgia, serif; font-style: italic; font-weight: 600; font-size: 16px; }
+  .pill .pmark .dot { font-style: normal; color: var(--red); }
+  .pill .div { width: 1px; height: 17px; background: rgba(246,243,238,0.16); }
+  .pill .count { color: #f6f3ee; letter-spacing: -0.01em; }
+  .pill .check { color: #6bd08a; font-weight: 700; }
+  .pill .btn {
+    display: inline-flex; align-items: center; gap: 6px; background: #c8102e; color: #f6f3ee;
+    border-radius: 999px; padding: 8px 15px; font: 600 14px -apple-system, sans-serif;
+    box-shadow: 0 4px 14px rgba(200,16,46,0.42);
+  }
+  .pill .btn svg { width: 13px; height: 13px; }
+</style>
+</head>
+<body>
+  <div class="eyebrow"><span class="mark">airlock<span class="dot">.</span></span> &nbsp;privacy firewall for AI</div>
+  <h1>The AI never sees <span class="red">who it is about.</span></h1>
+  <p class="sub">Names, emails, secrets and client data are swapped for placeholders on your
+    own device, before your prompt is ever sent. The model only sees the shape of the request.</p>
+
+  <div class="card">
+    <div class="card-head"><span class="dot3"><i></i><i></i><i></i></span> New chat</div>
+    <div class="prompt">
+      Help me write a follow-up note. My client is <span class="ph">[NAME_1]</span>
+      (<span class="ph">[EMAIL_1]</span>), who I see for anxiety. His employer is
+      <span class="ph">[ORG_1]</span>, and his copay of <span class="ph">[CARD_1]</span> is still open.
+    </div>
+    <div class="compose">
+      <span>Message the assistant</span>
+      <span class="send"><svg viewBox="0 0 24 24" fill="none" stroke="#f6f3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
+    </div>
+  </div>
+
+  <div class="pill">
+    <span class="pmark">airlock<span class="dot">.</span></span>
+    <span class="div"></span>
+    <span class="count"><span class="check">&#10003;</span> Locked</span>
+    <span class="btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#f6f3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+      Lock it
+    </span>
+  </div>
+</body>
+</html>

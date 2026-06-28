@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:440px; height:280px; overflow:hidden; }
+  :root { --ink:#0b0b0c; --red:#c8102e; --paper:#f6f3ee; }
+  body { width:440px; height:280px; background:
+      radial-gradient(360px 200px at 100% 0%, #1d1d1d 0%, rgba(29,29,29,0) 62%), #0b0b0c;
+    color:var(--paper); font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;
+    padding:32px 34px; position:relative; }
+  .mark{font-family:Georgia,serif;font-style:italic;font-weight:600;font-size:38px;letter-spacing:-0.01em;}
+  .mark .dot{font-style:normal;color:var(--red);}
+  .tag{font-size:13.5px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(246,243,238,0.55);margin-top:14px;}
+  h1{font-family:Georgia,serif;font-weight:600;font-size:25px;line-height:1.22;margin-top:auto;max-width:17ch;}
+  h1 .red{color:var(--red);}
+  .wrap{height:100%;display:flex;flex-direction:column;}
+  .lock{position:absolute;right:30px;bottom:30px;width:62px;height:62px;border-radius:16px;
+    background:rgba(200,16,46,0.12);border:1px solid rgba(200,16,46,0.4);display:grid;place-items:center;color:var(--red);}
+  .lock svg{width:30px;height:30px;}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div>
+      <div class="mark">airlock<span class="dot">.</span></div>
+      <div class="tag">privacy firewall for AI</div>
+    </div>
+    <h1>Lock the sensitive parts <span class="red">before you hit send.</span></h1>
+  </div>
+  <div class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+  :root { --ink:#0b0b0c; --paper:#f4efe7; --card:#fff; --red:#c8102e; --green:#1f8a4c; --line:rgba(11,11,12,0.10); --muted:#6b6860; }
+  body { width:1280px; height:800px; background: var(--paper);
+    font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; color:var(--ink); padding:70px 76px; }
+  .mark{font-family:Georgia,serif;font-style:italic;font-weight:600;}
+  .mark .dot{font-style:normal;color:var(--red);}
+  .eyebrow{font-size:17px;color:var(--muted);margin-bottom:22px;}
+  .eyebrow .mark{font-size:18px;color:var(--ink);}
+  h1{font-family:Georgia,serif;font-weight:600;font-size:52px;line-height:1.05;letter-spacing:-0.015em;}
+  h1 .red{color:var(--red);}
+  .sub{font-size:19px;color:#3a3a34;margin-top:16px;max-width:66ch;}
+  .row{display:flex;gap:26px;margin-top:46px;align-items:stretch;position:relative;}
+  .col{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;
+    box-shadow:0 22px 54px rgba(11,11,12,0.10);padding:28px 30px;min-height:360px;}
+  .tag{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;letter-spacing:0.04em;
+    text-transform:uppercase;margin-bottom:18px;}
+  .tag.leak{color:var(--red);} .tag.safe{color:var(--green);}
+  .tag .pip{width:9px;height:9px;border-radius:50%;}
+  .tag.leak .pip{background:var(--red);} .tag.safe .pip{background:var(--green);}
+  .body{font-size:22px;line-height:1.66;color:#1a1a18;}
+  .hot{color:var(--red);font-weight:600;border-bottom:2px solid rgba(200,16,46,0.35);}
+  .ph{color:var(--green);font-weight:600;background:rgba(31,138,76,0.08);border:1px solid rgba(31,138,76,0.25);
+    border-radius:7px;padding:1px 8px;font-family:ui-monospace,Menlo,monospace;font-size:18px;}
+  .seam{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;
+    background:#0b0b0c;color:#f6f3ee;border-radius:999px;padding:11px 16px;display:inline-flex;align-items:center;gap:9px;
+    box-shadow:0 14px 34px rgba(0,0,0,0.3);font-size:15px;font-weight:600;}
+  .seam .mark{font-size:16px;} .seam .mark .dot{color:var(--red);}
+  .seam svg{width:15px;height:15px;}
+  .foot{margin-top:34px;font-size:18px;color:var(--muted);}
+  .foot b{color:var(--ink);font-weight:600;}
+</style>
+</head>
+<body>
+  <div class="eyebrow"><span class="mark">airlock<span class="dot">.</span></span> &nbsp;privacy firewall for AI</div>
+  <h1>Same request. <span class="red">None of the identity.</span></h1>
+  <p class="sub">Airlock rewrites your draft in place, then restores your real values in the reply. The round trip is invisible to you and airtight to the model.</p>
+
+  <div class="row">
+    <div class="col">
+      <div class="tag leak"><span class="pip"></span>What you type</div>
+      <div class="body">Help me write a follow-up note. My client is <span class="hot">Daniel Brooks</span> (<span class="hot">daniel.brooks@gmail.com</span>), who I see for anxiety. His employer is <span class="hot">Meridian Logistics</span>.</div>
+    </div>
+    <div class="seam"><span class="mark">airlock<span class="dot">.</span></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="#f6f3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </div>
+    <div class="col">
+      <div class="tag safe"><span class="pip"></span>What the model receives</div>
+      <div class="body">Help me write a follow-up note. My client is <span class="ph">[NAME_1]</span> (<span class="ph">[EMAIL_1]</span>), who I see for anxiety. His employer is <span class="ph">[ORG_1]</span>.</div>
+    </div>
+  </div>
+
+  <p class="foot">Three identifiers never left the device. <b>The model sees the shape of the request, not who it is about.</b></p>
+</body>
+</html>

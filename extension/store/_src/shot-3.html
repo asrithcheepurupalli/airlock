@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1280px; height:800px; overflow:hidden; }
+  :root { --ink:#0b0b0c; --paper:#0b0b0c; --card:#141414; --red:#c8102e; --paper2:#f6f3ee; --line:rgba(246,243,238,0.12); --muted:rgba(246,243,238,0.6); }
+  body { width:1280px; height:800px; background:
+      radial-gradient(900px 480px at 80% 0%, #1c1c1c 0%, rgba(28,28,28,0) 60%), #0b0b0c;
+    color:var(--paper2); font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; padding:74px 76px; }
+  .mark{font-family:Georgia,serif;font-style:italic;font-weight:600;}
+  .mark .dot{font-style:normal;color:var(--red);}
+  .eyebrow{font-size:17px;color:var(--muted);margin-bottom:24px;}
+  .eyebrow .mark{font-size:18px;color:var(--paper2);}
+  h1{font-family:Georgia,serif;font-weight:600;font-size:56px;line-height:1.05;letter-spacing:-0.015em;max-width:17ch;}
+  h1 .red{color:var(--red);}
+  .sub{font-size:20px;line-height:1.5;color:var(--muted);max-width:58ch;margin-top:22px;}
+  .grid{display:flex;gap:22px;margin-top:54px;}
+  .box{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 26px;}
+  .box .ic{width:42px;height:42px;border-radius:11px;background:rgba(246,243,238,0.06);border:1px solid var(--line);
+    display:grid;place-items:center;margin-bottom:18px;}
+  .box .ic svg{width:21px;height:21px;}
+  .box h3{font-size:21px;font-weight:600;margin-bottom:9px;}
+  .box p{font-size:15.5px;line-height:1.55;color:var(--muted);}
+  .net{display:inline-flex;align-items:baseline;gap:10px;margin-top:2px;}
+  .net .big{font-family:Georgia,serif;font-size:40px;color:var(--paper2);line-height:1;}
+  .net .lab{font-size:14px;color:var(--muted);}
+  .red-ic { color: var(--red); }
+</style>
+</head>
+<body>
+  <div class="eyebrow"><span class="mark">airlock<span class="dot">.</span></span> &nbsp;privacy firewall for AI</div>
+  <h1>It cannot leak what <span class="red">it never sends.</span></h1>
+  <p class="sub">The extension holds no network permission and makes no requests of its own. Open the network tab and watch it stay silent. In a category where the famous names turned out to be data brokers, that proof is the product.</p>
+
+  <div class="grid">
+    <div class="box">
+      <div class="ic red-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z"/><path d="M8.5 12l2.5 2.5L15.5 10"/></svg></div>
+      <h3>Provably local</h3>
+      <div class="net"><span class="big">0</span><span class="lab">network requests<br/>from the extension</span></div>
+    </div>
+    <div class="box">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#f6f3ee" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></div>
+      <h3>No permission to phone home</h3>
+      <p>Detection runs on your machine. Your prompts, terms and license never reach a server, ours or anyone's.</p>
+    </div>
+    <div class="box">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#f6f3ee" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9a8 8 0 0 1 13.5-3.5L20 8M20 5v3h-3M20 15a8 8 0 0 1-13.5 3.5L4 16M4 19v-3h3"/></svg></div>
+      <h3>Reversible by design</h3>
+      <p>Placeholders out, real values back in the reply, on your device. The model never sees the difference.</p>
+    </div>
+  </div>
+</body>
+</html>

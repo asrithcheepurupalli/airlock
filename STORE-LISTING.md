@@ -83,10 +83,12 @@ send it to an AI chat site, then restores your real values in the reply.
 ## Privacy policy URL
 https://airlock.made-by-ac.com/privacy.html
 
-## Assets
+## Assets (rendered on-brand; regenerate with extension/store/_src/render.sh)
 - Icon 128: extension/icons/icon128.png
-- Screenshot 1280x800: extension/store/screenshot-1280x800.png
-  (recommend replacing with a real capture: the in-page pill mid-redaction)
+- Screenshots 1280x800 (upload all three, in order):
+  1. extension/store/screenshot-1-1280x800.png (in-page lock, the pill mid-redaction)
+  2. extension/store/screenshot-2-1280x800.png (before/after: what you type vs what the model sees)
+  3. extension/store/screenshot-3-1280x800.png (no-network trust: 0 requests, runs on device)
 - Small promo tile 440x280: extension/store/marquee-tile.png
 
 ## Trader contact (required now that the account is a declared trader)
