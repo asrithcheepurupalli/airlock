@@ -52,9 +52,9 @@ const LEAK = [
 const STORE_URL = '' // e.g. https://chrome.google.com/webstore/detail/<id>
 const PRO_URL = 'https://madebyac.gumroad.com/l/airlock' // Gumroad checkout (opens as an overlay)
 const links = {
-  free: STORE_URL || 'mailto:hello@made-by-ac.com?subject=Notify%20me%20when%20Airlock%20launches',
-  pro: PRO_URL || 'mailto:hello@made-by-ac.com?subject=Airlock%20Pro%20waitlist',
-  talk: 'mailto:hello@made-by-ac.com?subject=Airlock%20for%20my%20team',
+  free: STORE_URL || 'mailto:asrith@made-by-ac.com?subject=Notify%20me%20when%20Airlock%20launches',
+  pro: PRO_URL || 'mailto:asrith@made-by-ac.com?subject=Airlock%20Pro%20waitlist',
+  talk: 'mailto:asrith@made-by-ac.com?subject=Airlock%20for%20my%20team',
 }
 const freeLabel = STORE_URL ? 'Add to Chrome, free' : 'Notify me at launch'
 const proLabel = PRO_URL ? 'Get Pro, $129 once' : 'Join the Pro waitlist'
@@ -262,7 +262,7 @@ export default function App() {
         <h2>Want this for your practice?</h2>
         <p>We are a small studio that builds sharp, defensible products and tunes them to
           how you actually work. Tell us what you handle, and we will set Airlock up for it.</p>
-        <a className="cta-btn" href="mailto:hello@made-by-ac.com?subject=Airlock">Talk to our studio</a>
+        <a className="cta-btn" href="mailto:asrith@made-by-ac.com?subject=Airlock">Talk to our studio</a>
       </section>
 
       <footer className="site-foot">

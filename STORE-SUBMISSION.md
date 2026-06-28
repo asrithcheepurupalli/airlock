@@ -39,7 +39,7 @@ breaking that guarantee.
 - The extension makes no network requests of its own, verifiable in the network tab.
 
 **Trader contact details** (required now that the account is declared a trader):
-- Support email: `hello@made-by-ac.com`
+- Support email: `asrith@made-by-ac.com`
 - Business/contact address: a valid mailing address (a business or mailing address is fine; it does not have to be a home address).
 
 ## Store assets (in `extension/store/`, regenerate with `_src/render.sh`)

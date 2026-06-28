@@ -95,7 +95,7 @@ https://airlock.made-by-ac.com/support.html
 - Small promo tile 440x280: extension/store/marquee-tile.png
 
 ## Trader contact (required now that the account is a declared trader)
-- Support email: hello@made-by-ac.com
+- Support email: asrith@made-by-ac.com
 - A valid business/mailing address (does not have to be a home address)
 
 ## Supported (state in your own expectations, not a store field)
