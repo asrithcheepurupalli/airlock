@@ -12,7 +12,7 @@ Airlock, privacy firewall for AI
 Strip names, emails, secrets and client data out of your prompt on your device, before it reaches ChatGPT, Claude or Gemini.
 
 ## Category
-Productivity
+Productivity > Tools
 
 ## Language
 English (United States)

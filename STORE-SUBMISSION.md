@@ -47,7 +47,7 @@ breaking that guarantee.
 - [ ] Recommended: replace the mockup screenshot with a real in-product capture (popup + in-page pill)
 
 ## Category & details
-- Category: **Productivity**
+- Category: **Productivity > Tools** (horizontal privacy utility; not dev-only, not a comms client)
 - Language: English
 - Listing copy: see `GTM-LAUNCH.md` then "Chrome Web Store listing"
 
