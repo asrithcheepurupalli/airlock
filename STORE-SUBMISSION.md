@@ -12,7 +12,7 @@ fetches nothing at runtime, so the model can't be downloaded later without
 breaking that guarantee.
 
 ## Before you upload
-- [ ] `npm run build:ext` then `npm run package:ext` produces `airlock-extension-v0.1.0.zip` (~126 MB, model bundled)
+- [ ] `npm run build:ext` then `npm run package:ext` produces `airlock-extension-v0.1.0.zip` (~89 MB, model bundled)
 - [ ] Landing deployed so the privacy URL is live: `https://airlock.made-by-ac.com/privacy.html`
 - [ ] Chrome Web Store developer account verified (trader status declared)
 
@@ -62,6 +62,11 @@ breaking that guarantee.
   users never create the offscreen document. The `wasm-unsafe-eval` CSP entry is
   only for the local runtime, not remote code.
 - The toolbar popup works everywhere and depends on no site markup; the in-page
-  control targets the ChatGPT and Claude compose boxes.
+  control targets the ChatGPT, Claude and Gemini compose boxes.
+- The package includes one content script declared with `"world": "MAIN"`
+  (`inject-main.js`). It exists solely to replace the text in the page's own
+  compose box (ProseMirror/Quill revert edits made from the isolated content
+  script). It adds no permission, makes no network request, and only acts when
+  the user clicks the in-page Lock control. It is bundled, not remote.
 - Pro is unlocked by an offline, signed license key the user pastes in; the
   extension verifies it locally with Web Crypto and never contacts a server.

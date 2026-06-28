@@ -1,7 +1,7 @@
 # Airlock, Chrome Web Store listing (paste-ready)
 
 Every field below matches the SHIPPED wired build (storage + offscreen + host
-access to ChatGPT and Claude + bundled model). House rule: no em or en dashes.
+access to ChatGPT, Claude and Gemini + bundled model). House rule: no em or en dashes.
 
 ---
 
