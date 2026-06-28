@@ -268,6 +268,7 @@ export default function App() {
       <footer className="site-foot">
         <span className="brand"><Wordmark name="made" /></span>
         <span className="muted">Airlock is a privacy firewall for AI. Built by our studio.</span>
+        <a className="muted" href="/support.html">Support</a>
         <a className="muted" href="/privacy.html">Privacy</a>
       </footer>
     </div>

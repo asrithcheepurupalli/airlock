@@ -20,6 +20,8 @@ breaking that guarantee.
 
 **Privacy policy URL:** `https://airlock.made-by-ac.com/privacy.html`
 
+**Support URL:** `https://airlock.made-by-ac.com/support.html`
+
 **Single purpose (one sentence):**
 > Airlock locks sensitive data out of your prompt on your own device before you send it to an AI chat site, then restores your real values in the reply.
 

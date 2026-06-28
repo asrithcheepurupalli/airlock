@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Airlock, support</title>
+    <meta name="description" content="Help with Airlock: supported sites, fixing the in-page lock, activating Pro, moving your license between devices, and how to reach us." />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,600&display=swap" rel="stylesheet" />
+    <style>
+      :root { --paper:#f6f3ee; --ink:#0b0b0c; --grey:#7c7770; --line:#ddd5c8; --red:#c8102e; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--paper); color: var(--ink);
+        font: 16px/1.65 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased; }
+      .wrap { max-width: 760px; margin: 0 auto; padding: 56px 24px 96px; }
+      .brand { font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 600;
+        font-size: 22px; text-decoration: none; color: var(--ink); }
+      .brand .dot { font-style: normal; color: var(--red); }
+      h1 { font-family: "Fraunces", Georgia, serif; font-weight: 500; font-size: 40px;
+        letter-spacing: -0.02em; margin: 40px 0 6px; }
+      .eff { color: var(--grey); font-size: 14px; margin: 0 0 32px; }
+      h2 { font-family: "Fraunces", Georgia, serif; font-weight: 500; font-size: 22px; margin: 38px 0 8px; }
+      h3 { font-size: 16.5px; margin: 24px 0 4px; }
+      p, li { color: #2a2a27; }
+      a { color: var(--red); }
+      .lead { font-size: 18px; }
+      .tldr { border: 1px solid var(--line); border-radius: 14px; background: #fbfaf6;
+        padding: 20px 22px; margin: 28px 0; }
+      .tldr strong { display:block; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+        color: var(--grey); margin-bottom: 8px; }
+      .tldr a { font-weight: 600; }
+      ul, ol { padding-left: 20px; }
+      li { margin: 4px 0; }
+      code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13.5px;
+        background: #ece6da; border-radius: 5px; padding: 1px 6px; }
+      footer { margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line);
+        color: var(--grey); font-size: 14px; display:flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="brand" href="/">airlock<span class="dot">.</span></a>
+
+      <h1>Support</h1>
+      <p class="eff">We read every message. Most replies go out within a day.</p>
+
+      <div class="tldr">
+        <strong>Reach a human</strong>
+        Email <a href="mailto:hello@made-by-ac.com">hello@made-by-ac.com</a>. Tell us your browser,
+        the site you were on, and what you expected to happen. A screenshot helps.
+      </div>
+
+      <h2>Where Airlock works</h2>
+      <p>Airlock runs on desktop Chrome and Chromium browsers (Chrome, Edge, Brave, Arc, Opera,
+        Vivaldi, ChromeOS). The in-page lock appears on ChatGPT, Claude and Gemini. The toolbar
+        popup redactor works for any text you paste, on any site.</p>
+      <p>It is not available on mobile, on Firefox or Safari, or inside the desktop apps for those
+        assistants. Those are not browser pages an extension can reach. Use the website versions.</p>
+
+      <h2>Common questions</h2>
+
+      <h3>I clicked Lock it and the text did not change</h3>
+      <ol>
+        <li>Reload the extension: open <code>chrome://extensions</code>, find Airlock, click the
+          reload icon.</li>
+        <li>Refresh the chat tab (the in-page control only loads on a fresh page).</li>
+        <li>Try again. If a particular site still cannot take the replacement, Airlock will tell you
+          and you can use the toolbar popup instead: paste your draft, lock it, copy it back.</li>
+      </ol>
+
+      <h3>The pill does not appear on a chat site</h3>
+      <p>Refresh the page once after installing or updating. If it still does not show, the site may
+        have changed its layout. Email us the site and we will push a fix. The popup redactor keeps
+        working in the meantime.</p>
+
+      <h3>Names and organisations are not being locked</h3>
+      <p>Locking names, organisations and places is a Pro feature, powered by a small model that runs
+        on your device. Free locks structured data (emails, phone numbers, cards, secrets and IDs)
+        and flags suspected names so you know they are there. Upgrade to Pro to lock them
+        automatically.</p>
+
+      <h3>How do I activate Pro?</h3>
+      <p>After your purchase, open <a href="/activate.html">the activation page</a>, paste your
+        license key, and click to activate Airlock. Verification happens locally in your browser, so
+        Pro keeps working with no further connection to us.</p>
+
+      <h3>Can I move my license to another computer?</h3>
+      <p>Yes. A license is for one active device at a time. To move it, open the Airlock popup on the
+        old computer and choose Remove, then activate on the new one. If you no longer have access to
+        the old device, email us your license key and we will release the seat.</p>
+
+      <h3>Is anything sent to your servers?</h3>
+      <p>No. Airlock holds no network permission and makes no requests of its own. Detection and
+        rehydration run entirely on your device. See the <a href="/privacy.html">privacy policy</a>
+        for the full picture.</p>
+
+      <h3>Refunds</h3>
+      <p>Pro is a one-time purchase. If it is not right for you, email us within 14 days and we will
+        sort out a refund.</p>
+
+      <h2>Still stuck?</h2>
+      <p>Email <a href="mailto:hello@made-by-ac.com">hello@made-by-ac.com</a> with your browser
+        version and a short description, and we will help.</p>
+
+      <footer>
+        <span>Airlock is a made. product.</span>
+        <a href="/">Back to airlock.</a>
+      </footer>
+    </div>
+  </body>
+</html>

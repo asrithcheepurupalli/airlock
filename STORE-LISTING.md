@@ -83,6 +83,9 @@ send it to an AI chat site, then restores your real values in the reply.
 ## Privacy policy URL
 https://airlock.made-by-ac.com/privacy.html
 
+## Support URL
+https://airlock.made-by-ac.com/support.html
+
 ## Assets (rendered on-brand; regenerate with extension/store/_src/render.sh)
 - Icon 128: extension/icons/icon128.png
 - Screenshots 1280x800 (upload all three, in order):
