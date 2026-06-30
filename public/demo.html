@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Airlock, interactive demo</title>
+  <meta name="description" content="Watch a prompt get redacted on your own device, before it reaches the model. A made. product.">
+  <meta property="og:title" content="Airlock, interactive demo">
+  <meta property="og:description" content="Watch a prompt get redacted on your device, before it reaches the model.">
+  <meta property="og:image" content="https://airlock.made-by-ac.com/og.png">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..600;1,9..144,500..600&family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--paper:#f6f3ee;--ink:#0b0b0c;--ink2:#2a2a27;--red:#c8102e;--card:#fbfaf6;--border:#e2dccf;--muted:#8c867c;--gold:#bd9b4e}
+    *{margin:0;box-sizing:border-box}
+    body{background:var(--paper);color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 22px 90px}
+    .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:34px}
+    .wm{font-family:Fraunces,Georgia,serif;font-style:italic;font-weight:600;font-size:24px;color:var(--ink);text-decoration:none}
+    .wm .d{font-style:normal;color:var(--red)}
+    .tag{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    h1{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:34px;line-height:1.1;letter-spacing:-.015em;margin-bottom:12px}
+    h1 .r{color:var(--red)}
+    .lede{font-size:17px;color:var(--ink2);margin-bottom:30px;max-width:560px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px}
+    .lbl{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:10px}
+    .lbl .live{color:var(--red)}
+    textarea{width:100%;min-height:118px;resize:vertical;border:1px solid var(--border);border-radius:12px;padding:14px;font-family:"Space Mono",monospace;font-size:14px;line-height:1.6;color:var(--ink);background:#fff}
+    textarea:focus{outline:none;border-color:var(--ink)}
+    .arrow{text-align:center;color:var(--muted);font-size:20px;margin:4px 0 2px}
+    .readout{font-family:"Space Mono",monospace;font-size:14px;line-height:1.7;color:var(--ink2);white-space:pre-wrap;word-break:break-word}
+    .ph{background:rgba(200,16,46,.10);color:var(--red);border-radius:5px;padding:1px 5px;font-weight:700;white-space:nowrap}
+    mark.restored{background:rgba(189,155,78,.22);color:var(--ink);border-radius:5px;padding:1px 4px}
+    .pill{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink2);background:var(--paper);border:1px solid var(--border);border-radius:999px;padding:6px 12px;margin-top:14px}
+    .pill .dot{width:7px;height:7px;border-radius:50%;background:#1fa463}
+    .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .chip{font-family:"Space Mono",monospace;font-size:12px;color:var(--ink2);background:#fff;border:1px solid var(--border);border-radius:8px;padding:5px 9px}
+    .chip b{color:var(--red)}
+    .send{margin-top:4px;width:100%;border:none;border-radius:999px;background:var(--ink);color:var(--paper);font-family:inherit;font-weight:600;font-size:15px;padding:14px;cursor:pointer;transition:opacity .2s}
+    .send:hover{opacity:.9}
+    .answer{display:none}
+    .answer.show{display:block;animation:rise .5s ease both}
+    @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    .answer h3{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:17px;margin-bottom:8px}
+    .answer .sub{font-size:13px;color:var(--muted);margin-bottom:10px}
+    .note{font-size:13px;color:var(--muted);text-align:center;margin-top:18px}
+    .cta{text-align:center;margin-top:40px}
+    .cta a{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--paper);text-decoration:none;font-weight:600;border-radius:999px;padding:14px 26px;font-size:15px;transition:opacity .2s}
+    .cta a:hover{opacity:.9}
+    .cta .back{display:block;margin-top:14px;color:var(--muted);font-size:13px;text-decoration:underline;text-underline-offset:2px;background:none;padding:0}
+    a.home{color:var(--muted);font-size:13px;text-decoration:none}
+    a.home:hover{color:var(--ink)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <a class="wm" href="https://airlock.made-by-ac.com">airlock<span class="d">.</span></a>
+      <span class="tag">Interactive demo</span>
+    </div>
+
+    <h1>Watch a prompt get redacted,<br>before it ever <span class="r">leaves.</span></h1>
+    <p class="lede">Edit the prompt below. Airlock finds the sensitive parts and swaps them for placeholders on your device. The model only ever sees the placeholders, and your real values come back in the answer.</p>
+
+    <div class="card">
+      <label class="lbl" for="prompt">Your prompt <span class="live">edit it, redaction is live</span></label>
+      <textarea id="prompt" spellcheck="false">Draft a warm follow-up email to Priya Nair at Northwind Logistics (priya.nair@northwind.co, +91 98765 43210) about the delayed Q3 rollout. Mention that our internal API key sk-live-9f2a7c41b8e6 is being rotated.</textarea>
+
+      <div class="arrow">&#8595;</div>
+      <label class="lbl">What leaves your device</label>
+      <div class="readout" id="redacted"></div>
+      <div class="legend" id="legend"></div>
+      <div class="pill"><span class="dot"></span> Redacted on your device. Nothing has been sent anywhere.</div>
+    </div>
+
+    <button class="send" id="send">Send through the firewall</button>
+
+    <div class="card answer" id="answer" style="margin-top:18px">
+      <h3>The model replied in placeholders</h3>
+      <p class="sub">All it ever saw was the redacted prompt above.</p>
+      <div class="readout" id="modelReply"></div>
+      <div style="height:18px"></div>
+      <h3>Airlock restored it for you</h3>
+      <p class="sub">Your real values are put back locally, highlighted here.</p>
+      <div class="readout" id="restored"></div>
+      <p class="note">This whole demo ran in your browser. No prompt, and no answer, touched a server.</p>
+    </div>
+
+    <div class="cta">
+      <a href="https://chromewebstore.google.com/detail/hbeghlogdgpojhmffabecfekegldapjc">Add Airlock to Chrome, free</a>
+      <a class="back" href="https://airlock.made-by-ac.com">See everything at airlock.made-by-ac.com</a>
+    </div>
+  </div>
+
+  <script>
+    // Demo redactor: regex for structured data + a small proper-noun list for the
+    // sample scenario. Pro's on-device model catches arbitrary names and companies;
+    // this page keeps it deterministic so the story is clear.
+    const TERMS = [
+      { re: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, type: 'EMAIL' },
+      { re: /sk-[A-Za-z0-9-]{6,}/g, type: 'SECRET' },
+      { re: /\+?\d[\d\s-]{7,}\d/g, type: 'PHONE' },
+      { re: /Priya Nair/g, type: 'NAME' },
+      { re: /Northwind Logistics/g, type: 'ORG' },
+    ];
+
+    function redact(text) {
+      let map = {}, counters = {}, out = text;
+      TERMS.forEach(({ re, type }) => {
+        out = out.replace(re, (m) => {
+          const hit = Object.keys(map).find((k) => map[k] === m);
+          if (hit) return hit;
+          counters[type] = (counters[type] || 0) + 1;
+          const ph = `[${type}_${counters[type]}]`;
+          map[ph] = m;
+          return ph;
+        });
+      });
+      return { redacted: out, map };
+    }
+
+    const PH_RE = /\[[A-Z]+_\d+\]/g;
+    const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    function withChips(text) {
+      return esc(text).replace(PH_RE, (m) => `<span class="ph">${m}</span>`);
+    }
+    function rehydrateHTML(text, map) {
+      let out = esc(text);
+      Object.keys(map).forEach((ph) => {
+        out = out.split(ph).join(`<mark class="restored">${esc(map[ph])}</mark>`);
+      });
+      return out;
+    }
+
+    const REPLY = `Subject: A quick update on the Q3 rollout\n\nHi [NAME_1],\n\nA short note that the rollout with [ORG_1] is running slightly behind. We are on it and will share a revised date soon. Separately, the API key [SECRET_1] is being rotated, so you may need to refresh your integration. I will follow up at [EMAIL_1] once it is live.\n\nWarm regards`;
+
+    const promptEl = document.getElementById('prompt');
+    const redactedEl = document.getElementById('redacted');
+    const legendEl = document.getElementById('legend');
+    const answerEl = document.getElementById('answer');
+
+    let lastMap = {};
+    function update() {
+      const { redacted, map } = redact(promptEl.value);
+      lastMap = map;
+      redactedEl.innerHTML = withChips(redacted) || '<span style="color:var(--muted)">type something above</span>';
+      const keys = Object.keys(map);
+      legendEl.innerHTML = keys.length
+        ? keys.map((ph) => `<span class="chip"><b>${ph}</b> = ${esc(map[ph])}</span>`).join('')
+        : '';
+      answerEl.classList.remove('show');
+    }
+    promptEl.addEventListener('input', update);
+    update();
+
+    document.getElementById('send').addEventListener('click', () => {
+      document.getElementById('modelReply').innerHTML = withChips(REPLY);
+      document.getElementById('restored').innerHTML = rehydrateHTML(REPLY, lastMap);
+      answerEl.classList.add('show');
+      answerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  </script>
+</body>
+</html>

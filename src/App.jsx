@@ -105,6 +105,7 @@ export default function App() {
         <a className="brand" href="#top"><Wordmark name="airlock" /></a>
         <div className="nav-right">
           <a href="#how">How it works</a>
+          <a href="/demo">Demo</a>
           <a href="#pricing">Pricing</a>
           <a href="/activate.html">Activate</a>
           <a className="nav-cta" href="#pricing">Get Airlock</a>
