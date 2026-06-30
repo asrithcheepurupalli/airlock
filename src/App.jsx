@@ -124,6 +124,21 @@ export default function App() {
           <a className="btn-primary" href={links.free}>{freeLabel}</a>
           <a className="btn-ghost" href="#how">See how it works</a>
         </div>
+        <a
+          className="ph-badge"
+          href="https://www.producthunt.com/products/airlock-6?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-airlock-6"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Airlock on Product Hunt"
+          style={{ display: 'inline-block', marginTop: '24px' }}
+        >
+          <img
+            src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1184875&theme=light&t=1782843190496"
+            alt="Airlock - Redact your prompts on-device before AI ever sees them | Product Hunt"
+            width="250"
+            height="54"
+          />
+        </a>
 
         <div className="demo-frame">
           <div className="demo-frame-head">
