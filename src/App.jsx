@@ -49,7 +49,7 @@ const LEAK = [
 // CTA targets. Swap STORE_URL for the Chrome Web Store listing once it is live,
 // and PRO_URL for the Stripe checkout once payments are wired. Until then the
 // buttons collect interest instead of dead-ending.
-const STORE_URL = '' // e.g. https://chrome.google.com/webstore/detail/<id>
+const STORE_URL = 'https://chromewebstore.google.com/detail/hbeghlogdgpojhmffabecfekegldapjc' // Chrome Web Store (live)
 const PRO_URL = 'https://madebyac.gumroad.com/l/airlock' // Gumroad checkout (opens as an overlay)
 const links = {
   free: STORE_URL || 'mailto:asrith@made-by-ac.com?subject=Notify%20me%20when%20Airlock%20launches',
