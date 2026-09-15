@@ -7,11 +7,14 @@ const SAMPLE = `Draft a warm reply to my client Acme Health Systems. The main co
 const DEFAULT_TERMS = ['Acme Health Systems']
 
 const NER_LABELS = {
-  idle: '',
-  loading: 'on-device model: loading',
-  ready: 'on-device model: ready',
-  error: 'on-device model: unavailable (rules and terms still active)',
+  idle: 'BERT NER (bert-base-NER-uncased) — initialising',
+  loading: 'BERT NER — downloading model weights, first run only',
+  ready: 'BERT NER — running on your device, no server involved',
+  error: 'BERT NER unavailable — regex rules still active',
 }
+
+// Types the NER model catches vs regex rules
+const NER_TYPES = new Set(['NAME', 'ORG', 'LOCATION', 'LOC', 'PER', 'MISC'])
 
 function Highlighted({ text, spans }) {
   if (!spans.length) return <span>{text}</span>
@@ -19,14 +22,16 @@ function Highlighted({ text, spans }) {
   let cursor = 0
   spans.forEach((s, i) => {
     if (s.start > cursor) out.push(<span key={`t${i}`}>{text.slice(cursor, s.start)}</span>)
+    const isNer = s.isNer
     out.push(
       <mark
         key={`m${i}`}
-        className="chip"
+        className={`chip${isNer ? ' chip-ner' : ''}`}
         style={{ ['--c']: CATEGORY_COLORS[s.type] || '#475569' }}
-        title={`${s.label} becomes ${s.placeholder}`}
+        title={`${s.label}${isNer ? ' (caught by on-device AI)' : ' (caught by rule)'} → ${s.placeholder}`}
       >
         {s.original}
+        {isNer && <span className="ner-tag">AI</span>}
       </mark>
     )
     cursor = s.end
@@ -51,10 +56,23 @@ export default function Demo() {
     () => terms.split(',').map((t) => t.trim()).filter(Boolean),
     [terms]
   )
-  const { redacted, map, spans } = useMemo(
+
+  const { redacted, map, spans: rawSpans } = useMemo(
     () => redact(input, termList, nerSpans),
     [input, termList, nerSpans]
   )
+
+  // Tag each span with whether the NER model caught it
+  const spans = useMemo(() => {
+    const nerPositions = new Set(nerSpans.map(n => `${n.start}:${n.end}`))
+    return rawSpans.map(s => ({
+      ...s,
+      isNer: nerPositions.has(`${s.start}:${s.end}`) || NER_TYPES.has(s.type),
+    }))
+  }, [rawSpans, nerSpans])
+
+  const ruleCount = spans.filter(s => !s.isNer).length
+  const nerCount = spans.filter(s => s.isNer).length
 
   useEffect(() => {
     setStatusHandler(setNerStatus)
@@ -69,9 +87,6 @@ export default function Demo() {
     return () => clearTimeout(handle)
   }, [input])
 
-  // When no relay is reachable (e.g. the public static site), build the same
-  // demo-mode answer locally so the round trip still shows rehydration working,
-  // and so the landing needs no open backend proxy.
   function mockAnswer(red) {
     const seen = red.match(/\[[A-Z]+_\d+\]/g) || []
     const first = (...types) => seen.find((p) => types.some((t) => p.startsWith(`[${t}_`)))
@@ -103,7 +118,7 @@ export default function Demo() {
       setAnswer(rehydrate(data.answer, map))
       setMode(data.mode)
     } catch (e) {
-      const a = mockAnswer(redacted) // graceful local fallback, no backend needed
+      const a = mockAnswer(redacted)
       setRawAnswer(a)
       setAnswer(rehydrate(a, map))
       setMode('demo')
@@ -114,6 +129,15 @@ export default function Demo() {
 
   return (
     <div className="demo">
+      {/* Engine status bar — makes the AI layer visible */}
+      <div className={`engine-bar engine-${nerStatus}`}>
+        <span className={`engine-dot engine-dot-${nerStatus}`} />
+        <span className="engine-label">{NER_LABELS[nerStatus]}</span>
+        {nerStatus === 'ready' && (
+          <span className="engine-detail">bert-base-NER-uncased · q8 · TensorFlow.js</span>
+        )}
+      </div>
+
       <div className="demo-input">
         <label className="lbl">Your prompt <span className="muted">(type anything, redaction is live)</span></label>
         <textarea value={input} onChange={(e) => setInput(e.target.value)} rows={5} spellCheck={false} />
@@ -127,10 +151,19 @@ export default function Demo() {
             <h3>What you wrote</h3>
             <span className="badge">
               {spans.length} sensitive {spans.length === 1 ? 'span' : 'spans'}
-              {nerStatus === 'loading' && ', scanning'}
             </span>
           </div>
           <div className="readout"><Highlighted text={input} spans={spans} /></div>
+          {spans.length > 0 && (
+            <div className="detection-breakdown">
+              {ruleCount > 0 && (
+                <span className="det-pill det-rule">{ruleCount} by rules</span>
+              )}
+              {nerCount > 0 && (
+                <span className="det-pill det-ner">{nerCount} by on-device AI</span>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="card model">
@@ -150,7 +183,6 @@ export default function Demo() {
           {busy ? 'Sending redacted prompt' : 'Send through the firewall'}
         </button>
         {mode && <span className={`mode mode-${mode}`}>{mode === 'live' ? 'live, claude-opus-4-8' : 'demo mode (no API key)'}</span>}
-        {nerStatus !== 'idle' && <span className={`ner-status ner-${nerStatus}`}>{NER_LABELS[nerStatus]}</span>}
       </div>
 
       {answer && (

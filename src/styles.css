@@ -153,10 +153,69 @@ button.link { background: none; color: var(--muted); padding: 0; font-size: 12px
 .mode { font-size: 12px; }
 .mode-live { color: var(--ok); }
 .mode-demo { color: var(--muted); }
-.ner-status { font-size: 12px; }
-.ner-loading { color: var(--accent); }
-.ner-ready { color: var(--ok); }
-.ner-error { color: var(--muted); }
+
+/* ---- engine status bar ---- */
+.engine-bar {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 13px; border-radius: 9px; margin-bottom: 14px;
+  font-size: 12.5px; border: 1px solid var(--line); background: var(--bg);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.engine-idle { background: var(--bg); }
+.engine-loading { background: #fefce8; border-color: #fde68a; }
+.engine-ready { background: #f0fdf4; border-color: #bbf7d0; }
+.engine-error { background: var(--bg); }
+
+.engine-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  background: var(--muted);
+}
+.engine-dot-loading {
+  background: #d97706;
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+.engine-dot-ready { background: var(--ok); }
+.engine-dot-error { background: var(--muted); }
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.engine-label { font-size: 12.5px; color: var(--ink); flex: 1; }
+.engine-loading .engine-label { color: #92400e; }
+.engine-ready .engine-label { color: #166534; }
+
+.engine-detail {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10.5px; color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---- NER chip variant ---- */
+.chip.chip-ner {
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+}
+.ner-tag {
+  display: inline-block;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
+  background: color-mix(in srgb, var(--c) 22%, transparent);
+  color: var(--c);
+  border-radius: 3px; padding: 0 3px;
+  margin-left: 3px; vertical-align: middle;
+  line-height: 1.6;
+}
+
+/* ---- detection breakdown ---- */
+.detection-breakdown {
+  display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;
+}
+.det-pill {
+  font-size: 11px; border-radius: 999px; padding: 2px 9px;
+  border: 1px solid; white-space: nowrap;
+}
+.det-rule { color: #374151; border-color: var(--line); background: var(--bg); }
+.det-ner { color: #166534; border-color: #bbf7d0; background: #f0fdf4; }
 
 .answer { margin-top: 16px; }
 .answer-body { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
