@@ -40,15 +40,17 @@
       <a class="brand" href="/">airlock<span class="dot">.</span></a>
 
       <h1>Privacy policy</h1>
-      <p class="eff">Effective 27 June 2026</p>
+      <p class="eff">Effective 27 June 2026 · updated 4 October 2026</p>
 
-      <p class="lead">Airlock is built so that this page can be short. It processes everything
-        on your device. It collects nothing, sends nothing, and stores nothing on any server.</p>
+      <p class="lead">Airlock is built so that this page can be short. The extension processes everything
+        on your device. It collects nothing, sends nothing, and stores nothing on any server. The only time
+        anything reaches us is if you buy Airlock Pro and activate it, which is described below.</p>
 
       <div class="tldr">
         <strong>The whole thing in one line</strong>
-        Airlock has no servers, no analytics, and no network permission. Your data never reaches us,
-        because there is no "us" for it to reach.
+        The Airlock extension has no servers, no analytics, and no network permission. The text you redact
+        never reaches us. The one exception is activating Pro, which involves your license key and email,
+        never your prompts.
       </div>
 
       <h2>What Airlock does</h2>
@@ -60,9 +62,20 @@
         transmitted.</p>
 
       <h2>What we collect</h2>
-      <p>Nothing. Airlock has no accounts, no analytics, no telemetry, and no tracking. It makes no
+      <p>From the extension: nothing. It has no accounts, no analytics, no telemetry, and no tracking. It makes no
         network requests of its own. You can confirm this: open your browser's network tab and watch
         Airlock stay silent.</p>
+
+      <h2>Buying and activating Pro, the one place anything reaches us</h2>
+      <p>The free extension never contacts us. If you buy Airlock Pro, these things happen, and only these:</p>
+      <ul>
+        <li><strong>The purchase</strong> is handled by Gumroad, under Gumroad's own terms and privacy policy. Gumroad processes your payment details and name. We receive your email address and a sale ID through its license check.</li>
+        <li><strong>Activation:</strong> on the activation page you paste the license key from your receipt. Our server sends it to Gumroad to confirm it is valid and has not been refunded, then returns a signed token containing your email, the sale ID and a random device ID. The extension verifies that token offline from then on.</li>
+        <li><strong>One device at a time:</strong> to keep a license on a single device, we keep one small record per license, the sale ID and the random device ID, in a Redis store hosted by Upstash. Releasing the license deletes it. Nothing in it relates to your prompts or your browsing.</li>
+        <li><strong>Hosting:</strong> Vercel hosts this website and the activation step, and keeps standard request logs (IP address, browser, pages requested). Its servers can be outside India.</li>
+        <li><strong>Fonts:</strong> this website loads its typefaces from Google Fonts, so Google can see your IP address and browser details when a page opens.</li>
+      </ul>
+      <p>We keep the sale ID, email and device ID for as long as the license is in use, so it keeps working, and delete the device record when you release it. Ask us to delete anything else we hold about you.</p>
 
       <h2>Permissions, and why</h2>
       <ul>
@@ -75,8 +88,8 @@
       </ul>
 
       <h2>Your data and third parties</h2>
-      <p>We do not sell, share, or transmit your data, because we never receive it. Airlock has no
-        third-party services. When <em>you</em> choose to send a redacted prompt to ChatGPT, Claude or Gemini,
+      <p>We do not sell or share your data. The extension never receives your prompts and uses no
+        third-party services; for Pro, Gumroad, Vercel and Upstash act as described above. When <em>you</em> choose to send a redacted prompt to ChatGPT, Claude or Gemini,
         that text goes to those providers under their own policies. Airlock's entire job is to make
         sure the sensitive parts are replaced with placeholders before that happens.</p>
 

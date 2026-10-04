@@ -286,6 +286,7 @@ export default function App() {
         <span className="muted">Airlock is a privacy firewall for AI. Built by our studio.</span>
         <a className="muted" href="/support.html">Support</a>
         <a className="muted" href="/privacy.html">Privacy</a>
+        <a className="muted" href="/terms.html">Terms</a>
       </footer>
     </div>
   )
